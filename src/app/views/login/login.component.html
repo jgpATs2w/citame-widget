@@ -1,0 +1,87 @@
+<div fxLayout="column" fxLayoutAlign="center center">
+  <header>
+    <img src="assets/logo.png">
+    <h1>citame.click</h1>
+  </header>
+
+  <div fxFlex="50%" fxFlex.xs="100%">
+
+    <!-- 0: default view -->
+    <mat-card fxFlexFill *ngIf="state==0">
+      <mat-card-header fxLayoutAlign="center center">
+        <mat-card-title><p>Identifícate...</p></mat-card-title>
+      </mat-card-header>
+
+      <mat-card-content>
+
+        <mat-list role="list">
+
+          <mat-list-item role="listitem" fxLayoutAlign="center center">
+            <button mat-raised-button class="with-icon login-facebook" (click)="loginFacebook()">
+              <i class="fa fa-facebook" fxLayoutAlign="center center"></i>
+              <span>Facebook</span>
+            </button>
+          </mat-list-item>
+
+          <mat-list-item role="listitem" fxLayoutAlign="center center">
+            <button mat-raised-button class="with-icon" (click)="loginGoogle()">
+              <i class="fa fa-google" fxLayoutAlign="center center"></i>
+              <span>Google</span>
+            </button>
+          </mat-list-item>
+
+          <mat-list-item role="listitem" fxLayoutAlign="center center">
+            <button mat-raised-button class="with-icon login-email" (click)="state=1">
+              <i class="fa fa-paper-plane" fxLayoutAlign="center center"></i>
+              <span>Email</span>
+            </button>
+          </mat-list-item>
+        </mat-list>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- 1: email login -->
+    <mat-card fxFlexFill class="login-email" *ngIf="state==1">
+      <mat-card-header fxLayoutAlign="start center">
+        <button mat-icon-button (click)="state=0">
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-card-header>
+
+      <mat-card-content>
+        <form [formGroup]="loginForm"
+              (ngSubmit)="onLoginSubmit(loginForm.value)"
+               fxLayout="column"
+               fxLayoutGap="2em"
+               class="login-form">
+             <mat-form-field>
+                <input class="login-email-input" matInput placeholder="tu email o teléfono móvil" [formControl]="loginForm.controls['id']">
+                <mat-error *ngIf="!loginForm.controls['id'].valid">Debes introducir tu email o número de teléfono válidos</mat-error>
+              </mat-form-field>
+
+             <mat-form-field>
+                <input class="login-password-input"
+                    matInput
+                    type="password"
+                    placeholder="tu contraseña"
+                    [formControl]="loginForm.controls['password']">
+                <mat-error *ngIf="!loginForm.controls['password'].valid">no puede estar vacío</mat-error>
+              </mat-form-field>
+              <div fxLayout="row" fxLayoutAlign="end center">
+                <button
+                  type="submit"
+                  [disabled]="!loginForm.valid"
+                  class="login-submit"
+                  mat-icon-button><mat-icon>input</mat-icon></button>
+              </div>
+              <div fxLayout="row" fxLayoutAlign="center bottom">
+                <a (click)="remindPassword()" class="reminder-link">No recuerdo mi contraseña</a>
+              </div>
+
+        </form>
+      </mat-card-content>
+    </mat-card>
+
+  </div>
+
+</div>

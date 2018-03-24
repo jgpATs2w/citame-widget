@@ -1,0 +1,51 @@
+@import "../../../_variables";
+
+header{
+  color: $secondary;
+  text-align: center;
+}
+mat-card{
+  padding-bottom: 4em;
+  mat-card-header button{
+    margin-left: -2em;
+  }
+}
+mat-card-title{
+  text-align: center;
+  color: $primary;
+  font-family: $font-primary;
+  font-size: 150% !important;
+}
+
+button.with-icon{
+  width: 15em;
+  i{
+    background-color: $primary;
+    color: white;
+    position: fixed;
+    left:0;
+    height: 100%;
+    width: 3em;
+    vertical-align: middle;
+  }
+  span{
+    margin-left: 3.5em;
+    color: $secondary;
+  }
+}
+
+.mat-button-wrapper{
+  padding-left: 0 !important;
+}
+
+mat-header{
+  margin-left: -0.5em;
+}
+.login-form{
+  margin-top: 2em !important;
+}
+
+.reminder-link{
+  font-size: 80%;
+  cursor: pointer;
+}
