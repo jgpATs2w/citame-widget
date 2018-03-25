@@ -1,0 +1,131 @@
+<ng-template #loading>
+  <div>
+    <mat-spinner></mat-spinner>
+    <br>
+    Cargando reservas...
+  </div>
+</ng-template>
+
+<ng-template #dayHourSegmentTemplate let-segment="segment" let-locale="locale">
+  <div
+    class="cal-hour-segment"
+    [ngClass]="segment.cssClass"
+    (click)= "hourClicked(segment.date)">
+    <div [hidden]="!segment.isStart" class="cal-time">
+      {{ segment.date | calendarDate:'dayViewHour':locale }}
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #weekEventTemplate let-weekEvent="weekEvent" let-locale="locale">
+  <div class="cal-event" (click)="eventClicked(weekEvent)">
+    {{weekEvent.event.start|date:'HH:mm'}} {{weekEvent.event.title}}
+  </div>
+</ng-template>
+
+<ng-template #monthCellTemplate let-day="day" let-locale="locale">
+  <div class="cal-cell-top">
+    <span class="cal-day-badge" *ngIf="day.badgeTotal > 0">{{ day.badgeTotal }}</span>
+    <span class="cal-day-number">{{ day.date | calendarDate:'monthViewDayNumber':locale }}</span>
+  </div>
+  <div *ngIf="day.events.length<5">
+    <ul>
+      <li *ngFor="let event of day.events">{{event.start|date:'HH:mm'}} {{event.title}}</li>
+    </ul>
+  </div>
+</ng-template>
+
+<mat-sidenav-container>
+  <mat-sidenav-content>
+    <div class="calendar-container" *ngIf="events$ | async; else loading; let events">
+      <mat-toolbar color="none">
+        <div>
+          <button
+            mat-button
+            (click)="today()"
+            class="btn-today">
+            HOY
+          </button>
+          <div fxLayout>
+            <button
+              mat-button
+              (click)="previous()"
+              class="small btn-previous">
+              <i class="fa fa-chevron-left"></i>
+            </button>
+
+            <button
+              mat-button
+              (click)="next()"
+              class="small btn-next">
+              <i class="fa fa-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+
+        <span class="toolbar-date-title">{{ viewDate | calendarDate:(view + 'ViewTitle'):locale}}</span>
+
+        <span class="spacer"></span>
+
+        <div fxLayoutAlign="end">
+          <mat-form-field>
+            <mat-select [(value)]="view" (change)="selectView(view)">
+              <mat-option value="month">Mes</mat-option>
+              <mat-option value="week">Semana</mat-option>
+              <mat-option value="day">Día</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </mat-toolbar>
+        <div [ngSwitch]="view">
+          <mwl-calendar-month-view
+            *ngSwitchCase="'month'"
+            [viewDate]="viewDate"
+            [excludeDays]="excludeDays"
+            [events]="events"
+            (dayClicked)="monthDayClicked($event.day)"
+            [refresh]="refresh"
+            (eventTimesChanged)="eventTimesChanged($event)"
+            (eventClicked)="eventClicked($event)"
+            [locale]="locale"
+            [weekStartsOn]="weekStartsOn"
+            [cellTemplate]="monthCellTemplate">
+          </mwl-calendar-month-view>
+
+          <mwl-calendar-week-view
+            *ngSwitchCase="'week'"
+            [viewDate]="viewDate"
+            [excludeDays]="excludeDays"
+            [events]="events"
+            (dayClicked)="viewDate = $event.date; view = 'day'"
+            [refresh]="refresh"
+            (eventTimesChanged)="eventTimesChanged($event)"
+            (eventClicked)="eventClicked($event)"
+            [locale]="locale"
+            [weekStartsOn]="weekStartsOn"
+            (dayHeaderClicked)="goToDay($event.day.date)"
+            [eventTemplate]="weekEventTemplate">
+          </mwl-calendar-week-view>
+
+          <mwl-calendar-day-view
+            *ngSwitchCase="'day'"
+            [viewDate]="viewDate"
+            [events]="events"
+            [refresh]="refresh"
+            (eventTimesChanged)="eventTimesChanged($event)"
+            (eventClicked)="eventClicked($event)"
+            [locale]="locale"
+            [dayStartHour]="9"
+            [dayEndHour]="dayEndHour"
+            [hourSegmentTemplate]="dayHourSegmentTemplate">
+          </mwl-calendar-day-view>
+        </div>
+    </div>
+
+    <button
+      class="btn-add"
+      mat-fab color="primary"
+      (click)="addEvent()"><i class="material-icons">add</i></button>
+
+  </mat-sidenav-content>
+</mat-sidenav-container>

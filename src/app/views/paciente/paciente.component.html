@@ -1,0 +1,68 @@
+<mat-toolbar fxLayout>
+  <button mat-icon-button (click)="close()"><i class="material-icons">close</i></button>
+  <h1>Paciente</h1>
+  <span class="spacer"></span>
+
+  <button mat-icon-button (click)="delete()" fxLayoutAlign="end"><i class="material-icons">delete</i></button>
+</mat-toolbar>
+
+<form  [formGroup]="form">
+  <mat-list fxLayout="column" fxLayoutGap="1em">
+    <mat-list-item>
+      <div fxLayout fxLayoutGap="1em" fxFlexFill>
+        <mat-form-field fxFlex=40%>
+          <input matInput type="text" placeholder="Nombre"
+            [formControl]="form.controls['nombre']">
+        <mat-error *ngIf="!form.controls['nombre'].valid">no puede estar vacío</mat-error>
+        </mat-form-field>
+        <mat-form-field fxFlex=40%>
+          <input matInput type="text" placeholder="Apellidos"
+            [formControl]="form.controls['apellidos']">
+        </mat-form-field>
+      </div>
+    </mat-list-item>
+    <mat-list-item>
+      <div fxLayout fxLayoutGap="1em" fxFlexFill>
+        <mat-form-field fxFlex=60%>
+          <input matInput type="email" placeholder="Correo electrónico"
+            [formControl]="form.controls['email']">
+        <mat-error *ngIf="!form.controls['email'].valid">debes introducir un email válido</mat-error>
+        </mat-form-field>
+        <mat-slide-toggle [formControl]="form.controls['envio_email']">Notificar por email</mat-slide-toggle>
+      </div>
+    </mat-list-item>
+    <mat-list-item>
+      <div fxLayout fxLayoutGap="1em" fxFlexFill>
+        <mat-form-field fxFlex=40%>
+          <input matInput type="email" placeholder="Teléfono"
+            [formControl]="form.controls['tfno']">
+        </mat-form-field>
+        <mat-slide-toggle [formControl]="form.controls['envio_sms']">Notificar por SMS</mat-slide-toggle>
+      </div>
+    </mat-list-item>
+    <mat-list-item>
+      <mat-form-field fxFlex=80%>
+        <input matInput type="text" placeholder="Dirección"
+          [formControl]="form.controls['direccion']">
+      </mat-form-field>
+    </mat-list-item>
+    <mat-list-item>
+      <mat-form-field>
+        <input matInput type="text" placeholder="Nif"
+          [formControl]="form.controls['nif']">
+      </mat-form-field>
+    </mat-list-item>
+
+    <mat-list-item>
+      <mat-form-field *ngIf="clinicas$ | async; let clinicas">
+        <mat-select placeholder="Clínica" [formControl]="form.controls['clinica_id']">
+          <mat-option *ngFor="let clinica of clinicas" value="{{clinica.id}}">{{clinica.nombre}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </mat-list-item>
+
+    <mat-list-item>
+      <button mat-button *ngIf="!id" (click)="save()" fxLayoutAlign="end"><i class="material-icons">save</i> CREAR</button>
+    </mat-list-item>
+  </mat-list>
+</form>

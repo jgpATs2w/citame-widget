@@ -1,0 +1,12 @@
+@import "../../../_variables.scss";
+
+.toolbar-date-title::first-letter{
+  text-transform: capitalize;
+}
+
+.calendar-container{
+  min-height: 400px
+}
+mat-toolbar > *{
+  margin-left: 1em;
+}
