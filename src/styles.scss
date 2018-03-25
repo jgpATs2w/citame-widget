@@ -1,0 +1,79 @@
+@import "variables.scss";
+
+body{
+  background-color: white;
+  font-family: Open Sans !important;
+}
+mat-toolbar{
+  background-color: white !important;
+
+  min-height: 6em;
+}
+mat-sidenav{
+  width: 140px;
+}
+mat-sidenav, mat-sidenav-content{
+  background-color: white;
+}
+mat-sidenav-container {
+  min-height: 600px
+}
+button i.fa{
+  color: black;
+}
+.app-name{
+  margin-left: 1em !important;
+}
+.cal-today {
+    background-color: red !important;
+    color: white !important;
+    .cal-day-number, span{
+      color: white !important;
+    }
+}
+.cal-month-view{
+
+  .cal-day-cell{
+    ul{
+      list-style: none;
+      padding: 0;
+      font-size: 70%;
+    }
+  }
+  .cal-day-cell:hover{
+    .cal-day-number{
+      color: red !important;
+    }
+  }
+}
+.spacer {
+  flex: 1 1 auto;
+}
+mwl-calendar-week-view-event{
+  font-size: 80%
+}
+.letter-avatar{
+  span{
+    padding-top: 0 !important;
+  }
+}
+.clickable{
+  cursor: pointer;
+}
+mat-sidenav-container .mat-list-item-content:hover{
+  background-color: $light;
+}
+.btn-add{
+  position: absolute !important;
+  bottom: 1em;
+  right: 1em;
+}
+.btn-logout{
+  margin-left: 1em
+}
+.small{
+  min-width: 0 !important
+}
+.active{
+  text-decoration: underline;
+}

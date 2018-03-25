@@ -22,6 +22,7 @@ import { AppState, INITIAL_STATE, rootReducer } from './app.store';
 import { UserActions, CalendarioActions } from './app.actions';
 import { UserEpics, CalendarioEpics } from './app.epics';
 
+import { AuthGuard } from './user/auth.guard';
 import { AppService } from './app.service';
 import { UserService } from './user/user.service';
 import { CalendarioService } from './calendario/calendario.service';
@@ -31,6 +32,7 @@ import { LoginComponent } from './views/login/login.component';
 import { CalendarioComponent } from './views/calendario/calendario.component';
 import { PacienteComponent } from './views/paciente/paciente.component';
 
+registerLocaleData(localeEs);
 @NgModule({
   declarations: [
     AppComponent,
@@ -54,6 +56,7 @@ import { PacienteComponent } from './views/paciente/paciente.component';
     AppService,
     {provide: LOCALE_ID, useValue: 'es-ES' },
     UserService,
+    AuthGuard,
     CalendarioService,
     UserActions, CalendarioActions,
     UserEpics, CalendarioEpics
@@ -68,8 +71,8 @@ export class AppModule {
       dateAdapter: DateAdapter<Date>
     ){
       const enhancers = [persistState('',{key:'redux-citame-widget'})]
-      //if(devTools.isEnabled)
-        //enhancers.push(devTools.enhancer());
+      if(devTools.isEnabled && environment.reduxDevTools)
+        enhancers.push(devTools.enhancer());
       const middleware= [
         //createLogger(),
         ...userEpics.getEpics(),

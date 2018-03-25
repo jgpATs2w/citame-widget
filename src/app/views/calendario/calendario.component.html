@@ -51,14 +51,14 @@
               mat-button
               (click)="previous()"
               class="small btn-previous">
-              <i class="fa fa-chevron-left"></i>
+              <mat-icon>keyboard_arrow_left</mat-icon>
             </button>
 
             <button
               mat-button
               (click)="next()"
               class="small btn-next">
-              <i class="fa fa-chevron-right"></i>
+              <mat-icon>keyboard_arrow_right</mat-icon>
             </button>
           </div>
         </div>
@@ -121,11 +121,6 @@
           </mwl-calendar-day-view>
         </div>
     </div>
-
-    <button
-      class="btn-add"
-      mat-fab color="primary"
-      (click)="addEvent()"><i class="material-icons">add</i></button>
 
   </mat-sidenav-content>
 </mat-sidenav-container>

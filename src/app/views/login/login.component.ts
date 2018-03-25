@@ -100,12 +100,10 @@ export class LoginComponent implements OnInit {
   }
 
   private saveUserAndGo(user: User){
-    if(user && user.rol != "paciente"){
+    if(user){
       this.userService.actions.setCurrentUser(user);
       this.zone.run(() => { this.router.navigate(['/protected']) });
       this.router.navigate(['/calendario']);
-    }else{
-      this.appService.snack("el usuario no dispone de permisos para entrar en la aplicación");
     }
 
   }

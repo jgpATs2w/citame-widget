@@ -17,7 +17,6 @@ export const routerConfig: Routes = [
     { path: 'paciente', component: PacienteComponent, canActivate: [AuthGuard] },
     { path: 'paciente/:id', component: PacienteComponent, canActivate: [AuthGuard] }
 
-
 ]
 
 export const routes: ModuleWithProviders = RouterModule.forRoot(routerConfig);
