@@ -26,9 +26,12 @@ import {
 import { Subject } from 'rxjs/Subject';
 import { Observable } from 'rxjs/Observable';
 
+import { AppService } from '../../app.service';
 import { CustomDateFormatter } from '../../calendario/custom-date-formatter.provider';
 import { CalendarioService } from '../../calendario/calendario.service';
-import { Cita } from '../../cita/cita.model';
+import { Cita, CITA_NEW } from '../../cita/cita.model';
+import { UserService } from '../../user/user.service';
+import { User } from '../../user/user.model';
 
 @Component({
   selector: 'app-calendario',
@@ -54,16 +57,20 @@ export class CalendarioComponent implements OnInit, OnDestroy {
 
     excludeDays: number[] = [];//0,6
     dayEndHour: number= 20;
+    dayMaxEvents:number= 8;
 
     msgVal: string = '';
 
     colors: any;
     salaId: string='1';
+    isPaciente: boolean= true;
 
     constructor(
       private router: Router,
+      private appService: AppService,
       private route: ActivatedRoute,
-      private calendarioService: CalendarioService
+      private calendarioService: CalendarioService,
+      private userService: UserService
     ) {
       this.colors= calendarioService.colors;
 
@@ -83,6 +90,7 @@ export class CalendarioComponent implements OnInit, OnDestroy {
             this.viewDate= new Date(params['date']);
         }
       });
+
       route.queryParams.subscribe(params=>{
         if(params['sala'])
           this.salaId= params['sala'];
@@ -102,12 +110,14 @@ export class CalendarioComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(){
+      this.appService.readQuery();
       this.calendarioService.startCitasLoop(this.viewDate, this.view, this.salaId);
+      this.userService.currentUser$.first().subscribe(user=>this.isPaciente=user.rol=='paciente');
     }
     ngOnDestroy(){
       this.calendarioService.stopCitasLoop();
     }
-    
+
     selectView(view:string){
       const viewOptions= this.calendarioService.viewOptions;
       this.router.navigate(['calendario', view, format(this.viewDate, viewOptions[this.view].format)], {queryParamsHandling: 'preserve'});
@@ -135,7 +145,7 @@ export class CalendarioComponent implements OnInit, OnDestroy {
     goToDay(date){
       const viewOptions= this.calendarioService.viewOptions;
 
-      this.router.navigate(['calendario', 'day', format(date, viewOptions['day'].format )]);
+      this.router.navigate(['calendario', 'day', format(date, viewOptions['day'].format )], {queryParamsHandling: 'preserve'});
     }
 
     dayClicked({date, events}: {date: Date, events: CalendarEvent[]}): void {
@@ -154,7 +164,7 @@ export class CalendarioComponent implements OnInit, OnDestroy {
     }
 
     eventClicked({ event }: { event: CalendarEvent }): void {
-      this.router.navigate(['cita', event.meta.id]);
+      console.info('clicked ', event.meta);
     }
     /*
     * Called when event is droped
@@ -174,7 +184,15 @@ export class CalendarioComponent implements OnInit, OnDestroy {
     }
 
     addEvent(date: Date=new Date()): void {
-      this.router.navigate(['/cita'], {queryParamsHandling:'preserve'});
+      let cita= Object.assign({}, CITA_NEW);
+      this.userService.currentUser$.first().subscribe(user=>{
+        cita.paciente_id= +user.id;
+        cita.inicio= this.calendarioService.formatDateTime(date);
+        cita.fin= this.calendarioService.formatDateTime(addMinutes(date, 60));
+
+        this.calendarioService.actions.addCita( cita );
+        this.refresh.next();
+      });
     }
 
     skipWeekends(direction: 'back' | 'forward'): void {

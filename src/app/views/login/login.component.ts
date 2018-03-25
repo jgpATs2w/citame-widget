@@ -59,7 +59,9 @@ export class LoginComponent implements OnInit {
     });
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.appService.readQuery();
+  }
 
   loginFacebook() {
     this.userService.loginFacebook()
@@ -103,7 +105,7 @@ export class LoginComponent implements OnInit {
     if(user){
       this.userService.actions.setCurrentUser(user);
       this.zone.run(() => { this.router.navigate(['/protected']) });
-      this.router.navigate(['/calendario']);
+      this.router.navigate(['/calendario'], {queryParamsHandling:'merge'});
     }
 
   }

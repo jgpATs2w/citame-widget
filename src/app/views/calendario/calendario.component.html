@@ -24,16 +24,24 @@
 </ng-template>
 
 <ng-template #monthCellTemplate let-day="day" let-locale="locale">
-  <div class="cal-cell-top">
-    <span class="cal-day-badge" *ngIf="day.badgeTotal > 0">{{ day.badgeTotal }}</span>
-    <span class="cal-day-number">{{ day.date | calendarDate:'monthViewDayNumber':locale }}</span>
+  <div [ngClass]="{
+      'day-disabled': day.isWeekend || day.isPast,
+      'day-full': day.badgeTotal>=dayMaxEvents,
+      'day-free': day.badgeTotal<dayMaxEvents }">
+    <div class="cal-cell-top">
+      <span class="cal-day-badge" *ngIf="day.badgeTotal > 0">{{ day.badgeTotal }}</span>
+      <span class="cal-day-number">{{ day.date | calendarDate:'monthViewDayNumber':locale }}</span>
+    </div>
+    <div *ngIf="day.events.length<5">
+      <ul>
+        <li *ngFor="let event of day.events">{{event.start|date:'HH:mm'}} {{event.title}}</li>
+      </ul>
+    </div>
   </div>
-  <div *ngIf="day.events.length<5">
-    <ul>
-      <li *ngFor="let event of day.events">{{event.start|date:'HH:mm'}} {{event.title}}</li>
-    </ul>
-  </div>
+
 </ng-template>
+
+<app-topbar></app-topbar>
 
 <mat-sidenav-container>
   <mat-sidenav-content>

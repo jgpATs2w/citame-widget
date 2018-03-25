@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Http, Response, Headers, RequestOptions } from '@angular/http';
+import { Router, ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import 'rxjs/add/operator/map';
 
@@ -15,20 +16,40 @@ import { AppState } from './app.store';
 @Injectable()
 export class AppService {
 
-  clinicaId$: Observable<string>;
+  clinicaId: string;
+  salaId: string;
+  productoId: string;
 
   constructor(
+    private router: Router,
+    private route: ActivatedRoute,
     private http: Http,
     private ngRedux: NgRedux<AppState>,
     private snackBar: MatSnackBar
   ) {}
 
+  readQuery(){
+    this.route.queryParams.first().subscribe(params=>{console.info(params);
+      if(params.clinica_id)
+        this.clinicaId= params.clinica_id;
+      else
+        this.router.navigate(['/error']);
+
+      if(params.sala_id)
+        this.salaId= params.sala_id;
+      if(params.producto_id)
+        this.productoId= params.producto_id;
+    })
+  }
   apiGet(url:string): Observable<ApiResponse>{
 
-    const urlBase= environment.API_URL;
+    url= environment.API_URL + url + '&clinica_id=' + this.clinicaId;
+    if(this.salaId)
+      url += '&sala_id='+this.salaId;
+    if(this.productoId)
+      url += '&producto_id='+this.productoId;
 
-    return this.http.get( urlBase + url )
-                  .map(res=>res.json());
+    return this.http.get( url ).map(res=>res.json());
 
   }
 
@@ -38,6 +59,12 @@ export class AppService {
     headers.append("Accept", 'application/json');
     headers.append('Content-Type', 'application/json' );
     let options = new RequestOptions({ headers: headers });
+
+    body.clinica_id= this.clinicaId;
+    if(this.salaId)
+      body.sala_id= this.salaId;
+    if(this.productoId)
+      body.producto_id= this.productoId;
 
     return this.http.post( environment.API_URL + url, body , options)
                   .map(res=>res.json());

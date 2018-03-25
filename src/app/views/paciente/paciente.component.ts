@@ -69,21 +69,16 @@ export class PacienteComponent implements OnInit {
 
     ///
     ngOnInit() {
-      //TODO if pacientes is not loaded, read usuario from api
-      const findPaciente$= (id)=>this.userService.pacientes$.map(pacientes=>pacientes.find(p=>p.id==id));
-      this.routeSubscription= this.route
-                                  .params
-                                  .pluck('id')
-                                  .do((id:string)=>this.id=id)
-                                  .filter(id=>id!=null)
-                                  .switchMap(id=>findPaciente$(id))
-                                  .first()
-                                  .subscribe(paciente=>{
-                                    if(paciente)
-                                      this.setupForm(paciente);
-                                    else
-                                      this.appService.snack("no se ha encontrado ningún paciente")
-                                  });
+
+      this.appService.readQuery();
+      
+      this.userService.currentUser$
+              .subscribe(paciente=>{
+                if(paciente)
+                  this.setupForm(paciente);
+                else
+                  this.appService.snack("no se ha encontrado ningún paciente")
+              });
     }
 
     ngOnDestroy(){

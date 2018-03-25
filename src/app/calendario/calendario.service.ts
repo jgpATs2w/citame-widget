@@ -30,6 +30,8 @@ import { NgRedux, select } from '@angular-redux/store';
 import { CalendarioActions } from './calendario.actions';
 import { AppState, CalendarioState } from '../app.store';
 import { AppService } from '../app.service';
+import { UserService } from '../user/user.service';
+import { User } from '../user/user.model';
 
 import { Cita, CITA_NEW } from '../cita/cita.model';
 import { environment } from '../../environments/environment';
@@ -62,11 +64,13 @@ export class CalendarioService {
   citas$: Observable<Cita[]>;
   citasFromServer$: Observable<Cita[]>;
   citasSubscription: Subscription;
+  currentUser: User;
 
   constructor(
     private ngRedux: NgRedux<AppState>,
     public actions: CalendarioActions,
-    private appService: AppService
+    private appService: AppService,
+    private userService: UserService
   ) {
 
     this.citas$= ngRedux
@@ -75,20 +79,6 @@ export class CalendarioService {
                     .filter((citas:Cita[])=>typeof citas==="object");
 
     this.citasFromServer$ = appService.apiGet('/citas.json?').pluck('data');
-  }
-
-  init(){
-    const cita1= {
-      ...CITA_NEW,
-      id:1,
-      paciente: {
-        ...CITA_NEW.paciente,
-        nombre: "Yoel"
-      }
-    }
-    const citas= [cita1];
-
-    this.actions.setCitas(citas);
   }
 
   citasFromServerForPaciente$(paciente_id):Observable<Cita[]>{
@@ -128,8 +118,7 @@ export class CalendarioService {
     return "/citas.json?desde="
             + desde
             + "&hasta="
-            + hasta
-            + "&sala=" + salaId;
+            + hasta;
   }
 
   public get events$(): Observable<any> {
@@ -137,24 +126,56 @@ export class CalendarioService {
                             this.deleteCita(event.meta);
                           };
 
-    return this.citas$
-                  .map((citas: Cita[]) => {
-                    return citas.map((cita: Cita) => {//TODO move to model
-                      return {
-                        title: cita.paciente? cita.paciente.nombre: cita.paciente_id,
-                        start: typeof cita.inicio == "string"? new Date(cita.inicio) : cita.inicio,
-                        end: typeof cita.fin == "string"? new Date(cita.fin) : cita.fin,
-                        color: colors.yellow,
-                        draggable: true,
-                        meta: cita,
-                        actions: [
-                          {},
-                          {
-                            label: '<i class="fa fa-fw fa-times"></i>',
-                            onClick: onDeleteEvent
-                          }
-                        ]
-                      };
+    return Observable.combineLatest(this.citas$,this.userService.currentUser$)
+                  .map(([citas, user]) => {
+                    return citas.map((cita: Cita) => {
+                      if(user.rol == 'paciente'){
+                        if(user.id == cita.paciente_id){
+                          return {
+                            id: Math.random(),
+                            title: 'Tú',
+                            start: typeof cita.inicio == "string"? new Date(cita.inicio) : cita.inicio,
+                            end: typeof cita.fin == "string"? new Date(cita.fin) : cita.fin,
+                            color: colors.yellow,
+                            draggable: true,
+                            meta: cita,
+                            actions: [
+                              {},
+                              {
+                                label: '<i class="fa fa-fw fa-times"></i>',
+                                onClick: onDeleteEvent
+                              }
+                            ]
+                          };
+                        }else{
+
+                          return {
+                            title: 'Reservado',
+                            start: typeof cita.inicio == "string"? new Date(cita.inicio) : cita.inicio,
+                            end: typeof cita.fin == "string"? new Date(cita.fin) : cita.fin,
+                            color: colors.blue,
+                            draggable: false,
+                            meta: cita
+                          };
+                        }
+                      }else{
+                        return {
+                          title: cita.paciente? cita.paciente.nombre: cita.paciente_id,
+                          start: typeof cita.inicio == "string"? new Date(cita.inicio) : cita.inicio,
+                          end: typeof cita.fin == "string"? new Date(cita.fin) : cita.fin,
+                          color: colors.yellow,
+                          draggable: true,
+                          meta: cita,
+                          actions: [
+                            {},
+                            {
+                              label: '<i class="fa fa-fw fa-times"></i>',
+                              onClick: onDeleteEvent
+                            }
+                          ]
+                        };
+                      }
+
                     });
                   });
   };
