@@ -81,8 +81,7 @@ export class LoginComponent implements OnInit {
       .loginEmail(form)
       .subscribe( (response: ApiResponse )=>{
         if(response.success){
-          this.userService.actions.setCurrentUser(response.data);
-          this.router.navigate(['/calendario']);
+          this.saveUserAndGo(response.data);
         }else{
           this.appService.snack("Acceso no autorizado");
         }
@@ -104,7 +103,6 @@ export class LoginComponent implements OnInit {
   private saveUserAndGo(user: User){
     if(user){
       this.userService.actions.setCurrentUser(user);
-      this.zone.run(() => { this.router.navigate(['/protected']) });
       this.router.navigate(['/calendario'], {queryParamsHandling:'merge'});
     }
 
