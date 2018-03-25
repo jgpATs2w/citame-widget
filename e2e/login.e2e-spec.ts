@@ -2,6 +2,7 @@ import { browser, by, element, until } from 'protractor';
 
 describe('/login', () => {
   beforeEach(() => {
+    browser.waitForAngularEnabled(false);
     browser.get('/login');
   });
 

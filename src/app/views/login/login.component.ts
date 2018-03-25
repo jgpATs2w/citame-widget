@@ -12,7 +12,7 @@ import {
 import { Observable } from "rxjs/Rx";
 
 import { environment } from '../../../environments/environment';
-/*
+
 import { AppService } from '../../app.service';
 import {
   UserService,
@@ -26,7 +26,7 @@ function idValidator(control: FormControl): { [s: string]: boolean } {
   if (!control.value.match(emailPattern) && ! control.value.match(phonePattern) ) {
     return {invalidId: true};
   }
-}*/
+}
 
 @Component({
   selector: 'app-login',
@@ -35,9 +35,6 @@ function idValidator(control: FormControl): { [s: string]: boolean } {
 })
 export class LoginComponent implements OnInit {
 
-  state: number=0;
-  ngOnInit(){}
-/*
   loginForm: FormGroup;
   registerForm: FormGroup;
   error: any;
@@ -112,5 +109,5 @@ export class LoginComponent implements OnInit {
     }
 
   }
-*/
+
 }
