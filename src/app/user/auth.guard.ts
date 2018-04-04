@@ -25,7 +25,7 @@ export class AuthGuard implements CanActivate {
               .map(currentUser=>currentUser!=null)
               .do((userActivated:boolean)=>{
                 if(!userActivated)
-                  this.router.navigate(['/login']);
+                  this.router.navigate(['/login'], {queryParamsHandling: 'preserve'});
               });
   }
 }
