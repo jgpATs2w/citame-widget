@@ -33,7 +33,7 @@ export class AppService {
   ) {}
 
   readQuery(){
-    this.route.queryParams.first().subscribe(params=>{console.info(params);
+    this.route.queryParams.first().subscribe(params=>{
       if(params.clinica_id)
         this.clinicaId= params.clinica_id;
       else
