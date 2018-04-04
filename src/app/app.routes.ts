@@ -10,9 +10,9 @@ import { ErrorComponent } from './views/error/error.component';
 import { AuthGuard } from './user/auth.guard';
 
 export const routerConfig: Routes = [
-    { path: '', redirectTo: 'login', pathMatch: 'full' },
+    { path: '', redirectTo: 'calendario', pathMatch: 'full' },
     { path: 'login', component: LoginComponent },
-    { path: 'calendario', component: CalendarioComponent, canActivate: [AuthGuard] },
+    { path: 'calendario', component: CalendarioComponent },
     { path: 'calendario/:view', component: CalendarioComponent, canActivate: [AuthGuard] },
     { path: 'calendario/:view/:date', component: CalendarioComponent, canActivate: [AuthGuard] },
     { path: 'paciente', component: PacienteComponent, canActivate: [AuthGuard] },

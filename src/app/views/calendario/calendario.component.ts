@@ -112,7 +112,7 @@ export class CalendarioComponent implements OnInit, OnDestroy {
     ngOnInit(){
       this.appService.readQuery();
       this.calendarioService.startCitasLoop(this.viewDate, this.view, this.salaId);
-      this.userService.currentUser$.first().subscribe(user=>this.isPaciente=user.rol=='paciente');
+      this.userService.currentUser$.first().subscribe(user=>this.isPaciente=( !user || user.rol=='paciente' ));
     }
     ngOnDestroy(){
       this.calendarioService.stopCitasLoop();

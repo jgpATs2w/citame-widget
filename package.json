@@ -5,7 +5,8 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build --prod",
+    "build": "ng build --prod --vendor-chunk=true",
+    "deploy": "scp -r dist/* citame.click:/var/www/citame/widget/",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e --environment=prod"

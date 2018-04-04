@@ -29,6 +29,7 @@ import { CalendarioService } from './calendario/calendario.service';
 import { routes } from './app.routes';
 import { AppComponent } from './app.component';
 import { TopbarComponent } from './views/topbar/topbar.component';
+import { LogoutDialog} from './views/topbar/topbar.component';
 import { LoginComponent } from './views/login/login.component';
 import { CalendarioComponent } from './views/calendario/calendario.component';
 import { PacienteComponent } from './views/paciente/paciente.component';
@@ -39,6 +40,7 @@ registerLocaleData(localeEs);
   declarations: [
     AppComponent,
     TopbarComponent,
+    LogoutDialog,
     LoginComponent,
     CalendarioComponent,
     PacienteComponent,

@@ -129,8 +129,8 @@ export class CalendarioService {
     return Observable.combineLatest(this.citas$,this.userService.currentUser$)
                   .map(([citas, user]) => {
                     return citas.map((cita: Cita) => {
-                      if(user.rol == 'paciente'){
-                        if(user.id == cita.paciente_id){
+                      if(!user || user.rol == 'paciente'){
+                        if(!user || user.id == cita.paciente_id){
                           return {
                             id: Math.random(),
                             title: 'Tú',
