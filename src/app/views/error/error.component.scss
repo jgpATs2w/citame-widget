@@ -1,0 +1,25 @@
+@import "../../../_variables";
+
+header{
+  color: $secondary;
+  text-align: center;
+}
+mat-card{
+  padding-bottom: 4em;
+  mat-card-header button{
+    margin-left: -2em;
+  }
+}
+mat-card-title{
+  text-align: center;
+  color: $primary;
+  font-family: $font-primary;
+
+  mat-icon{
+    vertical-align: bottom;
+  }
+}
+mat-card-content p{
+  text-align: center;
+  font-size: 175% !important;
+}

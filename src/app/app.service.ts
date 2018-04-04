@@ -19,6 +19,10 @@ export class AppService {
   clinicaId: string;
   salaId: string;
   productoId: string;
+  key: string;
+
+  ERROR_NO_KEY: number= 1;
+  ERROR_NO_CLINICA: number= 2;
 
   constructor(
     private router: Router,
@@ -39,6 +43,10 @@ export class AppService {
         this.salaId= params.sala_id;
       if(params.producto_id)
         this.productoId= params.producto_id;
+      if(params.key){
+        this.key= params.key;
+      }else
+        this.router.navigate(['/error'], {queryParams: {error:this.ERROR_NO_KEY}, queryParamsHandling: 'merge'})
     })
   }
   apiGet(url:string): Observable<ApiResponse>{
