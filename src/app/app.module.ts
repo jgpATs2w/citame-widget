@@ -58,6 +58,9 @@ registerLocaleData(localeEs);
     AngularFireAuthModule,
     NgReduxModule
   ],
+  entryComponents: [
+    LogoutDialog
+  ],
   providers: [
     AppService,
     {provide: LOCALE_ID, useValue: 'es-ES' },

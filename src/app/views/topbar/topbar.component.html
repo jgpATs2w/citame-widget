@@ -4,9 +4,9 @@
   <h1 class="app-name">Cítame.click</h1>
 
   <span class="spacer"></span>
-  <span class="user-name"
-    *ngIf="user$ | async as user"
-    [routerLink]="['/paciente']">{{user.nombre}}</span>
-  <button mat-button class="btn-logout" (click)="logout()">Salir <i class="material-icons">power_settings_new</i></button>
-
+  <div *ngIf="user$ | async as user">
+    <span class="user-name"
+      [routerLink]="['/paciente']" queryParamsHandling="preserve">{{user.nombre}}</span>
+    <button mat-button class="btn-logout" (click)="logout()"><i class="material-icons">power_settings_new</i></button>
+  </div>
 </mat-toolbar>

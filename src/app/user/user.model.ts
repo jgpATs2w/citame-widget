@@ -15,6 +15,7 @@ export interface User{
   si_paciente?: boolean;
   si_terapeuta?: boolean;
   rol?: string;
+  password?: string;
 
   citas?: Cita[];
 }

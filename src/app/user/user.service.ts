@@ -31,6 +31,7 @@ export class UserService {
   pacientesFromServer$: Observable<User[]>= Observable.of([]);
   pacientes$: Observable<User[]>;
   terapeutas$: Observable<User[]>;
+  userFromFirebase: User;
 
   pacientesSubscription: Subscription;
   terapeutasSubscription: Subscription;
@@ -101,6 +102,7 @@ export class UserService {
   processUserFromFirebase$( user$: Observable<User>): Observable<User>{
     return user$
               .map((user:User)=>({...user, id: user.email, password: 'firebase'}))
+              .do(user=>this.userFromFirebase=user)
               .mergeMap((user:User)=>this.loginEmail(user).map(apiResponse=>apiResponse.data))
   }
   createUser(user: User): Observable<ApiResponse>{

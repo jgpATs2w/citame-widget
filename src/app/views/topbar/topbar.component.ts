@@ -40,7 +40,7 @@ export class TopbarComponent implements OnInit {
         this.userService
             .logout()
             .subscribe(()=>{
-              this.router.navigate(['/login']);
+              this.router.navigate(['/calendario'], {queryParamsHandling:'preserve'});
               this.userService.actions.setCurrentUser(null);
             });
       }

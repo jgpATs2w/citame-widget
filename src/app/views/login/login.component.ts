@@ -37,7 +37,7 @@ export class LoginComponent implements OnInit {
 
   loginForm: FormGroup;
   registerForm: FormGroup;
-  error: any;
+  error: string;
   state: number=0;
 
   constructor(
@@ -55,7 +55,10 @@ export class LoginComponent implements OnInit {
       'email':  ['', Validators.compose([Validators.required, Validators.email])],
       'tfno':  ['', Validators.compose([Validators.required, Validators.pattern(phonePattern)])],
       'password':  ['', Validators.compose([Validators.required, Validators.pattern(passwordPattern)])],
-      'nombre':  ['', Validators.required]
+      'nombre':  ['', Validators.required],
+      'rol': ['paciente'],
+      'apellidos': [''],
+      'direccion': ['']
     });
   }
 
@@ -83,9 +86,25 @@ export class LoginComponent implements OnInit {
         if(response.success){
           this.saveUserAndGo(response.data);
         }else{
-          this.appService.snack("Acceso no autorizado");
+          this.error= "Acceso no autorizado";
         }
       });
+  }
+
+  onRegisterSubmit(form){
+    this.userService
+      .createUser(form)
+      .subscribe( (response: ApiResponse )=>{
+        if(response.success){
+          this.saveUserAndGo(response.data);
+        }else{
+          this.error= response.message;
+        }
+      });
+  }
+
+  setupRegisterForm(user: User){
+    this.registerForm.patchValue(user);
   }
 
   remindPassword(){
@@ -95,7 +114,7 @@ export class LoginComponent implements OnInit {
         if(response.success){
           this.state=0;
         }else{
-          this.appService.snack("no existe ninguna cuenta con ese identificador");
+          this.error= "no existe ninguna cuenta con ese identificador";
         }
       });
   }
@@ -104,8 +123,10 @@ export class LoginComponent implements OnInit {
     if(user){
       this.userService.actions.setCurrentUser(user);
       this.router.navigate(['/calendario'], {queryParamsHandling:'merge'});
+    }else{
+      this.setupRegisterForm(this.userService.userFromFirebase);
+      this.state= 2;
     }
-
   }
 
 }

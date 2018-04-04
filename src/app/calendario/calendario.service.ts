@@ -130,7 +130,7 @@ export class CalendarioService {
                   .map(([citas, user]) => {
                     return citas.map((cita: Cita) => {
                       if(!user || user.rol == 'paciente'){
-                        if(!user || user.id == cita.paciente_id){
+                        if(user && user.id == cita.paciente_id){
                           return {
                             id: Math.random(),
                             title: 'Tú',
@@ -148,7 +148,6 @@ export class CalendarioService {
                             ]
                           };
                         }else{
-
                           return {
                             title: 'Reservado',
                             start: typeof cita.inicio == "string"? new Date(cita.inicio) : cita.inicio,
