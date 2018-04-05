@@ -8,11 +8,12 @@ import { PacienteComponent } from './views/paciente/paciente.component';
 import { ErrorComponent } from './views/error/error.component';
 
 import { AuthGuard } from './user/auth.guard';
+import { LoginGuard } from './user/login.guard';
 import { CalendarioGuard } from './calendario/calendario.guard';
 
 export const routerConfig: Routes = [
     { path: '', redirectTo: 'calendario', pathMatch: 'full' },
-    { path: 'login', component: LoginComponent },
+    { path: 'login', component: LoginComponent, canActivate: [LoginGuard] },
     { path: 'calendario', component: CalendarioComponent, canActivate: [CalendarioGuard] },
     { path: 'calendario/:view', component: CalendarioComponent, canActivate: [CalendarioGuard] },
     { path: 'calendario/:view/:date', component: CalendarioComponent, canActivate: [CalendarioGuard] },

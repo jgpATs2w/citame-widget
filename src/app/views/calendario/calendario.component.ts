@@ -175,7 +175,7 @@ export class CalendarioComponent implements OnInit, OnDestroy {
     }
 
     eventClicked({ event }: { event: CalendarEvent }): void {
-      console.info('clicked ', event.meta);
+      this.router.navigate(['login'], {queryParamsHandling:'preserve'});
     }
     /*
     * Called when event is droped
@@ -195,14 +195,19 @@ export class CalendarioComponent implements OnInit, OnDestroy {
     }
 
     addEvent(date: Date=new Date()): void {
-      let cita= Object.assign({}, CITA_NEW);
       this.userService.currentUser$.first().subscribe(user=>{
-        cita.paciente_id= +user.id;
-        cita.inicio= this.calendarioService.formatDateTime(date);
-        cita.fin= this.calendarioService.formatDateTime(addMinutes(date, 60));
+        if(user){
+          let cita= Object.assign({}, CITA_NEW);
+          cita.paciente_id= +user.id;
+          cita.inicio= this.calendarioService.formatDateTime(date);
+          cita.fin= this.calendarioService.formatDateTime(addMinutes(date, 60));
 
-        this.calendarioService.actions.addCita( cita );
-        this.refresh.next();
+          this.calendarioService.actions.addCita( cita );
+          this.refresh.next();
+        }else{
+          this.router.navigate(['login'], {queryParamsHandling:'preserve'});
+        }
+
       });
     }
 
@@ -222,10 +227,6 @@ export class CalendarioComponent implements OnInit, OnDestroy {
 
     hourClicked(date: Date): void {
       this.addEvent(date);
-    }
-
-    createEvento(){
-
     }
 
 }

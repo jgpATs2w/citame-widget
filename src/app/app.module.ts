@@ -23,6 +23,7 @@ import { UserActions, CalendarioActions } from './app.actions';
 import { UserEpics, CalendarioEpics } from './app.epics';
 
 import { AuthGuard } from './user/auth.guard';
+import { LoginGuard } from './user/login.guard';
 import { AppService } from './app.service';
 import { UserService } from './user/user.service';
 import { CalendarioService } from './calendario/calendario.service';
@@ -66,7 +67,7 @@ registerLocaleData(localeEs);
     AppService,
     {provide: LOCALE_ID, useValue: 'es-ES' },
     UserService,
-    AuthGuard, CalendarioGuard,
+    AuthGuard, CalendarioGuard, LoginGuard,
     CalendarioService,
     UserActions, CalendarioActions,
     UserEpics, CalendarioEpics

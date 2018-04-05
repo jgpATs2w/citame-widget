@@ -9,6 +9,7 @@ import {
   ActivatedRoute,
   Router
 } from '@angular/router';
+import {Location} from '@angular/common';
 import { Observable } from "rxjs/Rx";
 
 import { environment } from '../../../environments/environment';
@@ -42,6 +43,7 @@ export class LoginComponent implements OnInit {
 
   constructor(
     private router: Router, private route: ActivatedRoute,
+    private location: Location,
     private zone: NgZone,
     private fb: FormBuilder,
     private userService: UserService,
@@ -120,7 +122,7 @@ export class LoginComponent implements OnInit {
   private saveUserAndGo(user: User){
     if(user){
       this.userService.actions.setCurrentUser(user);
-      this.router.navigate(['/calendario'], {queryParamsHandling:'merge'});
+      this.router.navigate(['calendario'], {queryParamsHandling: 'preserve', preserveFragment: true})
     }else{
       this.setupRegisterForm(this.userService.userFromFirebase);
       this.state= 2;
