@@ -126,7 +126,6 @@ export class CalendarioComponent implements OnInit, OnDestroy {
         this.routeQueryParamsSubscription.unsubscribe();
     }
     updateState(){
-
       this.calendarioService.readServer(this.viewDate, this.view, this.salaId);
     }
     selectView(view:string){
@@ -181,13 +180,18 @@ export class CalendarioComponent implements OnInit, OnDestroy {
     * Called when event is droped
     */
     eventTimesChanged({event, newStart, newEnd}: CalendarEventTimesChangedEvent): void {
-      event.start= newStart;
-      event.end= newEnd;
-      event.meta.inicio= this.calendarioService.formatDateTime(event.start);
-      event.meta.fin= this.calendarioService.formatDateTime(event.end);
+      if(this.calendarioService.checkHorario(newStart) && this.calendarioService.checkHorario(newEnd)){
 
-      this.calendarioService.updateCita( event.meta );
-      this.refresh.next();
+        event.start= newStart;
+        event.end= newEnd;
+        event.meta.inicio= this.calendarioService.formatDateTime(event.start);
+        event.meta.fin= this.calendarioService.formatDateTime(event.end);
+
+        this.calendarioService.updateCita( event.meta );
+        this.refresh.next();
+      }else{
+        this.appService.snack('l@s terapeutas deben descansar :/');
+      }
     }
 
     formatDate(date: Date): string{
@@ -195,20 +199,25 @@ export class CalendarioComponent implements OnInit, OnDestroy {
     }
 
     addEvent(date: Date=new Date()): void {
-      this.userService.currentUser$.first().subscribe(user=>{
-        if(user){
-          let cita= Object.assign({}, CITA_NEW);
-          cita.paciente_id= +user.id;
-          cita.inicio= this.calendarioService.formatDateTime(date);
-          cita.fin= this.calendarioService.formatDateTime(addMinutes(date, 60));
+      if(this.calendarioService.checkHorario(date)){
+        this.userService.currentUser$.first().subscribe(user=>{
+          if(user){
+            let cita= Object.assign({}, CITA_NEW);
+            cita.paciente_id= +user.id;
+            cita.inicio= this.calendarioService.formatDateTime(date);
+            cita.fin= this.calendarioService.formatDateTime(addMinutes(date, 60));
 
-          this.calendarioService.actions.addCita( cita );
-          this.refresh.next();
-        }else{
-          this.router.navigate(['login'], {queryParamsHandling:'preserve'});
-        }
+            this.calendarioService.actions.addCita( cita );
+            this.refresh.next();
+          }else{
+            this.router.navigate(['login'], {queryParamsHandling:'preserve'});
+          }
 
-      });
+        });
+      }else{
+        this.appService.snack('l@s terapeutas deben descansar :/');
+      }
+
     }
 
     skipWeekends(direction: 'back' | 'forward'): void {

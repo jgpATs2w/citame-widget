@@ -18,7 +18,8 @@ import {
   format,
   setHours, setMinutes,
   startOfMonth, startOfWeek,
-  endOfMonth, endOfWeek
+  endOfMonth, endOfWeek,
+  getHours
 } from 'date-fns';
 
 import { Http, Response } from '@angular/http';
@@ -65,6 +66,7 @@ export class CalendarioService {
   citasFromServer$: Observable<Cita[]>;
   citasSubscription: Subscription;
   currentUser: User;
+  horario:any= [[9,14], [16,20]];
 
   constructor(
     private ngRedux: NgRedux<AppState>,
@@ -87,6 +89,7 @@ export class CalendarioService {
   readServer(date: Date, view: string, salaId: string='-1' ){
     const url= this.getCitasUrl(date, view, salaId);
     this.appService.apiGet( url ).pluck('data').first().subscribe((citas:Cita[])=>this.actions.setCitas(citas));
+    this.readHorario();
   }
   startCitasLoop( date: Date, view: string, salaId: string ){
     if(this.citasSubscription!=null) return;
@@ -96,12 +99,25 @@ export class CalendarioService {
               .delay(500)
               .subscribe((citas:Cita[])=>this.actions.setCitas(citas));
   }
-
   stopCitasLoop(){
     if(this.citasSubscription)
       this.citasSubscription.unsubscribe();
   }
 
+  readHorario(){
+    this.appService.apiGet( '/clinicas/'+this.appService.clinicaId +'.json')
+      .pluck('data')
+      .first()
+      .subscribe((clinica:any)=>{
+        const h1= clinica.horario.split('-');
+        this.horario[0]= h1[0].split(',');
+        this.horario[1]= h1[1].split(',');
+      });
+  }
+  checkHorario(date: Date): boolean{
+    const h= +getHours(date);console.info('checking horario: ' + h);
+    return h>=+this.horario[0][0] && h<=+this.horario[0][1] || h>=+this.horario[1][0]&&h<=+this.horario[1][1];
+  }
   private getCitasUrl( date: Date, view: string, salaId: string){
     let desde, hasta;
     switch(view){

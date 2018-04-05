@@ -16,7 +16,7 @@ import { AppState } from './app.store';
 @Injectable()
 export class AppService {
 
-  clinicaId: string;
+  public clinicaId: string;
   salaId: string;
   productoId: string;
   key: string;
@@ -46,6 +46,7 @@ export class AppService {
   }
   apiGet(url:string): Observable<ApiResponse>{
 
+    if(url.indexOf('?')<0) url+='?';
     url= environment.API_URL + url + '&clinica_id=' + this.clinicaId + '&key=' + this.key;
     if(this.salaId)
       url += '&sala_id='+this.salaId;
