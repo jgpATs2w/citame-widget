@@ -6,17 +6,13 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/take';
 
 import { NgRedux, select } from '@angular-redux/store';
-import { UserActions } from './user.actions';
-import { UsersState } from './users.reducer';
 import { AppService } from '../app.service';
-import { UserService } from './user.service';
 
 @Injectable()
-export class AuthGuard implements CanActivate {
+export class CalendarioGuard implements CanActivate {
 
   constructor(
       private appService: AppService,
-      private userService: UserService,
       private router: Router) {}
 
   canActivate(
@@ -30,11 +26,6 @@ export class AuthGuard implements CanActivate {
 
       this.appService.readQuery(queryParams);
 
-      return this.userService.currentUser$
-              .map(currentUser=>currentUser!=null)
-              .do((userActivated:boolean)=>{
-                if(!userActivated)
-                  this.router.navigate(['/login'], {queryParamsHandling: 'preserve'});
-              });
+      return Observable.of(true);
   }
 }

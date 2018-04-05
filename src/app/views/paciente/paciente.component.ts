@@ -70,8 +70,6 @@ export class PacienteComponent implements OnInit {
     ///
     ngOnInit() {
 
-      this.appService.readQuery();
-      
       this.userService.currentUser$
               .subscribe(paciente=>{
                 if(paciente)

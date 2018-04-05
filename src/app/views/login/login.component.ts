@@ -62,9 +62,7 @@ export class LoginComponent implements OnInit {
     });
   }
 
-  ngOnInit() {
-    this.appService.readQuery();
-  }
+  ngOnInit() {}
 
   loginFacebook() {
     this.userService.loginFacebook()

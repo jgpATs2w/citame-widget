@@ -32,12 +32,9 @@ export class AppService {
     private snackBar: MatSnackBar
   ) {}
 
-  readQuery(){
-    this.route.queryParams.first().subscribe(params=>{
+  readQuery(params){
       if(params.clinica_id)
         this.clinicaId= params.clinica_id;
-      else
-        this.router.navigate(['/error']);
 
       if(params.sala_id)
         this.salaId= params.sala_id;
@@ -45,13 +42,11 @@ export class AppService {
         this.productoId= params.producto_id;
       if(params.key){
         this.key= params.key;
-      }else
-        this.router.navigate(['/error'], {queryParams: {error:this.ERROR_NO_KEY}, queryParamsHandling: 'merge'})
-    })
+      }
   }
   apiGet(url:string): Observable<ApiResponse>{
 
-    url= environment.API_URL + url + '&clinica_id=' + this.clinicaId;
+    url= environment.API_URL + url + '&clinica_id=' + this.clinicaId + '&key=' + this.key;
     if(this.salaId)
       url += '&sala_id='+this.salaId;
     if(this.productoId)
@@ -74,7 +69,8 @@ export class AppService {
     if(this.productoId)
       body.producto_id= this.productoId;
 
-    return this.http.post( environment.API_URL + url, body , options)
+    if(url.indexOf('?')<0) url+='?';
+    return this.http.post( environment.API_URL + url + '&key=' + this.key, body , options)
                   .map(res=>res.json());
   }
 

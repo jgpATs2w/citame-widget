@@ -22,6 +22,34 @@
     {{weekEvent.event.start|date:'HH:mm'}} {{weekEvent.event.title}}
   </div>
 </ng-template>
+<ng-template
+  #weekHeaderTemplate
+  let-days="days"
+  let-locale="locale"
+  let-dayHeaderClicked="dayHeaderClicked"
+  let-eventDropped="eventDropped">
+  <div class="cal-day-headers">
+    <div
+      class="cal-header"
+      *ngFor="let day of days; trackBy:trackByWeekDayHeaderDate"
+      [class.cal-past]="day.isPast"
+      [class.cal-today]="day.isToday"
+      [class.cal-future]="day.isFuture"
+      [class.cal-weekend]="day.isWeekend"
+      [class.cal-drag-over]="day.dragOver"
+      [ngClass]="day.cssClass"
+      (mwlClick)="dayHeaderClicked.emit({day: day})"
+      mwlDroppable
+      (dragEnter)="day.dragOver = true"
+      (dragLeave)="day.dragOver = false"
+      (drop)="day.dragOver = false; eventDropped.emit({event: $event.dropData.event, newStart: day.date})">
+      <b fxHide fxShow.gt-sm>{{ day.date | calendarDate:'weekViewColumnHeader':locale }}</b><br>
+      <span fxHide fxShow.gt-sm>{{ day.date | calendarDate:'weekViewColumnSubHeader':locale }}</span>
+      <b fxHide.gt-sm>{{ day.date | date:'EEEEE':locale }}</b><br>
+      <b fxHide.gt-sm>{{ day.date | date:'dd/MM':locale }}</b><br>
+    </div>
+  </div>
+</ng-template>
 
 <ng-template #monthCellTemplate let-day="day" let-locale="locale">
   <div [ngClass]="{
@@ -41,13 +69,32 @@
 
 </ng-template>
 
+<ng-template
+  #monthHeaderTemplate
+  let-days="days"
+  let-locale="locale">
+  <div class="cal-cell-row cal-header">
+    <div
+      class="cal-cell"
+      *ngFor="let day of days; trackBy:trackByWeekDayHeaderDate"
+      [class.cal-past]="day.isPast"
+      [class.cal-today]="day.isToday"
+      [class.cal-future]="day.isFuture"
+      [class.cal-weekend]="day.isWeekend"
+      [ngClass]="day.cssClass">
+      <span fxHide fxShow.gt-sm>{{ day.date | calendarDate:'monthViewColumnHeader':locale }}</span>
+      <span fxHide.gt-sm>{{ day.date | date:'dd/MM':locale }}</span>
+    </div>
+  </div>
+</ng-template>
+
 <app-topbar></app-topbar>
 
 <mat-sidenav-container>
   <mat-sidenav-content>
     <div class="calendar-container" *ngIf="events$ | async; else loading; let events">
       <mat-toolbar color="none">
-        <div>
+        <mat-toolbar-row>
           <button
             mat-button
             (click)="today()"
@@ -59,31 +106,40 @@
               mat-button
               (click)="previous()"
               class="small btn-previous">
-              <mat-icon>keyboard_arrow_left</mat-icon>
+              <i class="fa fa-chevron-left"></i>
             </button>
 
             <button
               mat-button
               (click)="next()"
               class="small btn-next">
-              <mat-icon>keyboard_arrow_right</mat-icon>
+              <i class="fa fa-chevron-right"></i>
             </button>
           </div>
-        </div>
 
-        <span class="toolbar-date-title">{{ viewDate | calendarDate:(view + 'ViewTitle'):locale}}</span>
 
-        <span class="spacer"></span>
+          <span fxHide fxShow.gt-sm class="toolbar-date-title">{{ viewDate | calendarDate:(view + 'ViewTitle'):locale}}</span>
 
-        <div fxLayoutAlign="end">
-          <mat-form-field>
+          <span class="spacer"></span>
+
+          <button mat-icon-button (click)="updateState()"><mat-icon>refresh</mat-icon></button>
+        </mat-toolbar-row>
+        <mat-toolbar-row>
+
+          <span fxHide fxShow.gt-sm class="spacer"></span>
+
+          <mat-form-field class="select-view">
             <mat-select [(value)]="view" (change)="selectView(view)">
               <mat-option value="month">Mes</mat-option>
               <mat-option value="week">Semana</mat-option>
               <mat-option value="day">Día</mat-option>
             </mat-select>
           </mat-form-field>
-        </div>
+          <span fxHide.gt-sm class="spacer"></span>
+        </mat-toolbar-row>
+        <mat-toolbar-row fxHide.gt-sm *ngIf="view=='day'" class="toolbar-date-title">
+          {{ viewDate | calendarDate:(view + 'ViewTitle'):locale}}
+        </mat-toolbar-row>
       </mat-toolbar>
         <div [ngSwitch]="view">
           <mwl-calendar-month-view
@@ -97,6 +153,7 @@
             (eventClicked)="eventClicked($event)"
             [locale]="locale"
             [weekStartsOn]="weekStartsOn"
+            [headerTemplate]="monthHeaderTemplate"
             [cellTemplate]="monthCellTemplate">
           </mwl-calendar-month-view>
 
@@ -112,6 +169,7 @@
             [locale]="locale"
             [weekStartsOn]="weekStartsOn"
             (dayHeaderClicked)="goToDay($event.day.date)"
+            [headerTemplate]="weekHeaderTemplate"
             [eventTemplate]="weekEventTemplate">
           </mwl-calendar-week-view>
 
@@ -129,6 +187,5 @@
           </mwl-calendar-day-view>
         </div>
     </div>
-
   </mat-sidenav-content>
 </mat-sidenav-container>

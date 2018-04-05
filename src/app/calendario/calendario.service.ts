@@ -84,7 +84,10 @@ export class CalendarioService {
   citasFromServerForPaciente$(paciente_id):Observable<Cita[]>{
     return this.appService.apiGet('/citas.json?paciente_id='+paciente_id).pluck('data');
   }
-
+  readServer(date: Date, view: string, salaId: string='-1' ){
+    const url= this.getCitasUrl(date, view, salaId);
+    this.appService.apiGet( url ).pluck('data').first().subscribe((citas:Cita[])=>this.actions.setCitas(citas));
+  }
   startCitasLoop( date: Date, view: string, salaId: string ){
     if(this.citasSubscription!=null) return;
     const url= this.getCitasUrl(date, view, salaId);

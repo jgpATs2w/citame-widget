@@ -24,7 +24,7 @@ import {
   format
 } from 'date-fns';
 import { Subject } from 'rxjs/Subject';
-import { Observable } from 'rxjs/Observable';
+import { Observable,Subscription } from 'rxjs';
 
 import { AppService } from '../../app.service';
 import { CustomDateFormatter } from '../../calendario/custom-date-formatter.provider';
@@ -64,6 +64,8 @@ export class CalendarioComponent implements OnInit, OnDestroy {
     colors: any;
     salaId: string='1';
     isPaciente: boolean= true;
+    routeParamsSubscription: Subscription;
+    routeQueryParamsSubscription: Subscription;
 
     constructor(
       private router: Router,
@@ -76,7 +78,7 @@ export class CalendarioComponent implements OnInit, OnDestroy {
 
       this.events$= calendarioService.events$;
 
-      route.params.subscribe(params=>{
+      this.routeParamsSubscription= route.params.subscribe(params=>{
         if(params['view'])
           this.view= params['view'];
         if(params['date']){
@@ -89,11 +91,14 @@ export class CalendarioComponent implements OnInit, OnDestroy {
           }else
             this.viewDate= new Date(params['date']);
         }
+
+        this.updateState();
       });
 
-      route.queryParams.subscribe(params=>{
+      this.routeQueryParamsSubscription= route.queryParams.subscribe(params=>{
         if(params['sala'])
           this.salaId= params['sala'];
+        this.updateState();
       });
     }
 
@@ -110,14 +115,20 @@ export class CalendarioComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(){
-      this.appService.readQuery();
-      this.calendarioService.startCitasLoop(this.viewDate, this.view, this.salaId);
+      //this.calendarioService.startCitasLoop(this.viewDate, this.view, this.salaId);
       this.userService.currentUser$.first().subscribe(user=>this.isPaciente=( !user || user.rol=='paciente' ));
     }
     ngOnDestroy(){
       this.calendarioService.stopCitasLoop();
+      if(this.routeParamsSubscription)
+        this.routeParamsSubscription.unsubscribe();
+      if(this.routeQueryParamsSubscription)
+        this.routeQueryParamsSubscription.unsubscribe();
     }
+    updateState(){
 
+      this.calendarioService.readServer(this.viewDate, this.view, this.salaId);
+    }
     selectView(view:string){
       const viewOptions= this.calendarioService.viewOptions;
       this.router.navigate(['calendario', view, format(this.viewDate, viewOptions[this.view].format)], {queryParamsHandling: 'preserve'});

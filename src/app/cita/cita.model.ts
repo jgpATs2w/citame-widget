@@ -27,7 +27,7 @@ export const CITA_NEW:Cita={
   paciente:{
     id: null,
     clinica_id: null,
-    nombre: "Nueva cita",
+    nombre: "Tú",
     apellidos: null,
     email: null,
     tfno: null

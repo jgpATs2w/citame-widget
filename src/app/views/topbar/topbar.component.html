@@ -1,7 +1,7 @@
 <mat-toolbar color="none">
 
   <img src="assets/logo.png" width="50">
-  <h1 class="app-name">Cítame.click</h1>
+  <h1 fxHide fxShow.gt-sm class="app-name">Cítame.click</h1>
 
   <span class="spacer"></span>
   <div *ngIf="user$ | async as user">
