@@ -78,7 +78,7 @@
       [class.cal-weekend]="day.isWeekend"
       [ngClass]="day.cssClass">
       <span fxHide fxShow.gt-sm>{{ day.date | calendarDate:'monthViewColumnHeader':locale }}</span>
-      <span fxHide.gt-sm>{{ day.date | date:'dd/MM':locale }}</span>
+      <span fxHide.gt-sm>{{ day.date | date:'EEEEE':locale }}</span>
     </div>
   </div>
 </ng-template>
