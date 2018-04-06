@@ -115,7 +115,7 @@ export class CalendarioService {
       });
   }
   checkHorario(date: Date): boolean{
-    const h= +getHours(date);console.info('checking horario: ' + h);
+    const h= +getHours(date);
     return h>=+this.horario[0][0] && h<=+this.horario[0][1] || h>=+this.horario[1][0]&&h<=+this.horario[1][1];
   }
   private getCitasUrl( date: Date, view: string, salaId: string){

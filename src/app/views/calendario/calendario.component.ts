@@ -13,7 +13,7 @@ import {
   addDays,
   endOfMonth,
   isSameDay,
-  isSameMonth,
+  isSameMonth,isPast,
   addHours,
   subHours,
   subDays, subMonths, subWeeks,
@@ -115,7 +115,6 @@ export class CalendarioComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(){
-      //this.calendarioService.startCitasLoop(this.viewDate, this.view, this.salaId);
       this.userService.currentUser$.first().subscribe(user=>this.isPaciente=( !user || user.rol=='paciente' ));
     }
     ngOnDestroy(){
@@ -180,7 +179,8 @@ export class CalendarioComponent implements OnInit, OnDestroy {
     * Called when event is droped
     */
     eventTimesChanged({event, newStart, newEnd}: CalendarEventTimesChangedEvent): void {
-      if(this.calendarioService.checkHorario(newStart) && this.calendarioService.checkHorario(newEnd)){
+      if(
+        this.isValidDate(newStart) && this.isValidDate(newEnd)){
 
         event.start= newStart;
         event.end= newEnd;
@@ -189,8 +189,6 @@ export class CalendarioComponent implements OnInit, OnDestroy {
 
         this.calendarioService.updateCita( event.meta );
         this.refresh.next();
-      }else{
-        this.appService.snack('l@s terapeutas deben descansar :/');
       }
     }
 
@@ -199,7 +197,7 @@ export class CalendarioComponent implements OnInit, OnDestroy {
     }
 
     addEvent(date: Date=new Date()): void {
-      if(this.calendarioService.checkHorario(date)){
+      if(this.isValidDate(date)){
         this.userService.currentUser$.first().subscribe(user=>{
           if(user){
             let cita= Object.assign({}, CITA_NEW);
@@ -212,12 +210,21 @@ export class CalendarioComponent implements OnInit, OnDestroy {
           }else{
             this.router.navigate(['login'], {queryParamsHandling:'preserve'});
           }
-
         });
-      }else{
-        this.appService.snack('l@s terapeutas deben descansar :/');
       }
 
+    }
+
+    isValidDate(date: Date){
+      if(!this.calendarioService.checkHorario(date)){
+        this.appService.snack('l@s terapeutas deben descansar :/');
+        return false;
+      }
+      if(isPast(date)){
+        this.appService.snack('No se puede reservar en el pasado');
+        return false;
+      }
+      return true;
     }
 
     skipWeekends(direction: 'back' | 'forward'): void {
