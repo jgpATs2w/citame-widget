@@ -109,9 +109,9 @@ export class CalendarioService {
       .pluck('data')
       .first()
       .subscribe((clinica:any)=>{
-        const h1= clinica.horario.split('-');
-        this.horario[0]= h1[0].split(',');
-        this.horario[1]= h1[1].split(',');
+        const h1= clinica.horario.split(',');
+        this.horario[0]= h1[0].split('-');
+        this.horario[1]= h1[1].split('-');
       });
   }
   checkHorario(date: Date): boolean{

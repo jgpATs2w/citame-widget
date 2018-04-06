@@ -94,6 +94,18 @@
   <mat-sidenav-content>
     <div class="calendar-container" *ngIf="events$ | async; else loading; let events">
       <mat-toolbar color="none">
+
+        <mat-toolbar-row>
+          <span class="spacer"></span>
+          <mat-form-field class="select-view">
+            <mat-select [(value)]="view" (change)="selectView(view)">
+              <mat-option value="month">Mes</mat-option>
+              <mat-option value="week">Semana</mat-option>
+              <mat-option value="day">Día</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </mat-toolbar-row>
+        
         <mat-toolbar-row>
           <button
             mat-button
@@ -123,19 +135,6 @@
           <span class="spacer"></span>
 
           <button mat-icon-button (click)="updateState()"><mat-icon>refresh</mat-icon></button>
-        </mat-toolbar-row>
-        <mat-toolbar-row>
-
-          <span fxHide fxShow.gt-sm class="spacer"></span>
-
-          <mat-form-field class="select-view">
-            <mat-select [(value)]="view" (change)="selectView(view)">
-              <mat-option value="month">Mes</mat-option>
-              <mat-option value="week">Semana</mat-option>
-              <mat-option value="day">Día</mat-option>
-            </mat-select>
-          </mat-form-field>
-          <span fxHide.gt-sm class="spacer"></span>
         </mat-toolbar-row>
         <mat-toolbar-row fxHide.gt-sm *ngIf="view=='day'" class="toolbar-date-title">
           {{ viewDate | calendarDate:(view + 'ViewTitle'):locale}}

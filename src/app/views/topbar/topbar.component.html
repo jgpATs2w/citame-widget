@@ -7,6 +7,6 @@
   <div *ngIf="user$ | async as user">
     <span class="user-name"
       [routerLink]="['/paciente']" queryParamsHandling="preserve">{{user.nombre}}</span>
-    <button mat-button class="btn-logout" (click)="logout()"><i class="material-icons">power_settings_new</i></button>
+    <button mat-icon-button class="btn-logout" (click)="logout()"><i class="material-icons">power_settings_new</i></button>
   </div>
 </mat-toolbar>

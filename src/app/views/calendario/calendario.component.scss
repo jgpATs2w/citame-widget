@@ -7,8 +7,10 @@
 .calendar-container{
   min-height: 400px
 }
-mat-toolbar > *{
-  margin-left: 1em;
+mat-toolbar {
+  mat-toolbar-row{
+    padding: 0 !important;
+  }
 }
 
 .day-full{
