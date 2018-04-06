@@ -60,11 +60,6 @@
       <span class="cal-day-badge" *ngIf="day.badgeTotal > 0">{{ day.badgeTotal }}</span>
       <span class="cal-day-number">{{ day.date | calendarDate:'monthViewDayNumber':locale }}</span>
     </div>
-    <div *ngIf="day.events.length<5">
-      <ul>
-        <li *ngFor="let event of day.events">{{event.start|date:'HH:mm'}} {{event.title}}</li>
-      </ul>
-    </div>
   </div>
 
 </ng-template>
