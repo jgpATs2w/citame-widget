@@ -2,7 +2,7 @@
   <button mat-icon-button (click)="close()"><i class="material-icons">close</i></button>
   <h1>Paciente</h1>
   <span class="spacer"></span>
-
+  <button mat-icon-button (click)="save()" fxLayoutAlign="end"><i class="material-icons">save</i></button>
   <button mat-icon-button (click)="delete()" fxLayoutAlign="end"><i class="material-icons">delete</i></button>
 </mat-toolbar>
 
@@ -51,10 +51,6 @@
         <input matInput type="text" placeholder="Nif"
           [formControl]="form.controls['nif']">
       </mat-form-field>
-    </mat-list-item>
-
-    <mat-list-item>
-      <button mat-button *ngIf="!id" (click)="save()" fxLayoutAlign="end"><i class="material-icons">save</i> CREAR</button>
     </mat-list-item>
   </mat-list>
 </form>

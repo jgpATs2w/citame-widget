@@ -97,11 +97,11 @@ export function UsersReducer (state: UsersState = INITIAL_USERS_STATE, action: A
             return Object.assign(item,(<IUserAction>action).payload)
           })
         };
-        if(state.currentUser.id == +(<IUserAction>action).payload.id)
+        if(state.currentUser && state.currentUser.id == +(<IUserAction>action).payload.id)
           newState.currentUser= Object.assign(newState.currentUser,(<IUserAction>action).payload);
 
         return newState;
-        
+
     case UserActions.DELETE_USER:
         const idUsuario= (<IStringAction>action).payload;
         return {

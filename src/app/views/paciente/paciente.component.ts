@@ -52,8 +52,8 @@ export class PacienteComponent implements OnInit {
          'rol':  ['paciente'],
          'direccion':  [''],
          'nif':  [''],
-         'envio_sms':  [false, Validators.required],
-         'envio_email':  [false, Validators.required]
+         'envio_sms':  [false],
+         'envio_email':  [false]
        });
 
     }
@@ -62,9 +62,15 @@ export class PacienteComponent implements OnInit {
       this.location.back();
     }
     delete(){
-      this.userService.actions.deleteUsuario(this.form.get('id').value);
-      this.appService.snack("Se ha eliminado el paciente", "deshacer").subscribe(()=>console.info("deshacer"));
-      this.close();
+      if(window.confirm("Se eliminará el usuario definitivamente, incluidas sus citas y datos personales")){
+        this.userService.actions.deleteUsuario(this.form.get('id').value);
+        this.appService.snack("Se ha eliminado el paciente").subscribe(()=>console.info("deshacer"));
+        this.userService.logout()
+        .subscribe(()=>{
+          this.router.navigate(['/calendario'], {queryParamsHandling:'preserve'});
+          this.userService.actions.setCurrentUser(null);
+        });;
+      }
     }
 
     ///
@@ -72,10 +78,10 @@ export class PacienteComponent implements OnInit {
 
       this.userService.currentUser$
               .subscribe(paciente=>{
-                if(paciente)
+                if(paciente){
+                  this.id= ''+paciente.id;
                   this.setupForm(paciente);
-                else
-                  this.appService.snack("no se ha encontrado ningún paciente")
+                }
               });
     }
 
@@ -93,6 +99,7 @@ export class PacienteComponent implements OnInit {
          this.userService.actions.setCurrentPaciente(paciente);
          this.formSubscription= this.form.valueChanges.debounceTime(1000).subscribe(
              (form: any) => {
+               //if(!this.form.valid) return;
                this.userService.actions.updateUsuario(form);
              }
            )
@@ -102,8 +109,7 @@ export class PacienteComponent implements OnInit {
     save(){
       if(!this.form.valid) return;
 
-      this.userService.actions.addUser(this.form.getRawValue());
-      this.close();
+      this.userService.actions.updateUsuario(this.form.value);
     }
 
 
