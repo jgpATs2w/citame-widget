@@ -53,9 +53,9 @@
 
 <ng-template #monthCellTemplate let-day="day" let-locale="locale">
   <div [ngClass]="{
-      'day-disabled': day.isWeekend || day.isPast,
-      'day-full': day.badgeTotal>=dayMaxEvents,
-      'day-free': day.badgeTotal<dayMaxEvents }">
+      'calendar-day-disabled': day.isWeekend || day.isPast,
+      'calendar-day-full': day.badgeTotal>=dayMaxEvents,
+      'calendar-day-free': day.badgeTotal<dayMaxEvents }">
     <div class="cal-cell-top">
       <span class="cal-day-badge" *ngIf="day.badgeTotal > 0">{{ day.badgeTotal }}</span>
       <span class="cal-day-number">{{ day.date | calendarDate:'monthViewDayNumber':locale }}</span>
@@ -105,7 +105,7 @@
             </mat-select>
           </mat-form-field>
         </mat-toolbar-row>
-        
+
         <mat-toolbar-row>
           <button
             mat-button

@@ -13,12 +13,15 @@ mat-toolbar {
   }
 }
 
-.day-full{
+.calendar-day-full{
+  height: 100%;
   background-color: #f44336
 }
-.day-free{
+.calendar-day-free{
+  height: 100%;
   background-color: #66bb6a
 }
-.day-disabled{
+.calendar-day-disabled{
+  height: 100%;
   background-color: #bdbdbd
 }
