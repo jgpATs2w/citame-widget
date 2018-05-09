@@ -21,11 +21,15 @@ export class AuthGuard implements CanActivate {
 
   canActivate(
     next: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot): Observable<boolean> {
+    state: RouterStateSnapshot): Observable<boolean> | boolean {
       const queryParams= state.root.queryParams;
       if(!queryParams.key){
         this.router.navigate(['/error'], {queryParams: {error:this.appService.ERROR_NO_KEY}, queryParamsHandling: 'merge'});
-        return Observable.of(false);
+        return false;
+      }
+      if(!queryParams.clinica_id){
+        this.router.navigate(['/error'], {queryParams: {error:this.appService.ERROR_NO_CLINICA}, queryParamsHandling: 'merge'});
+        return false;
       }
 
       this.appService.readQuery(queryParams);

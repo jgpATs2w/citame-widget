@@ -15,8 +15,8 @@ mat-sidenav{
 mat-sidenav, mat-sidenav-content{
   background-color: white;
 }
-mat-sidenav-container {
-  min-height: 600px
+mat-sidenav-container{
+  height: 100%;
 }
 button i.fa{
   color: black;

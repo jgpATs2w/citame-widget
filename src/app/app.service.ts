@@ -16,7 +16,7 @@ import { AppState } from './app.store';
 @Injectable()
 export class AppService {
 
-  public clinicaId: string;
+  public clinicaId: string = '1';
   salaId: string;
   productoId: string;
   key: string;

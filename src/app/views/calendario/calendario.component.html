@@ -8,11 +8,11 @@
 
 <ng-template #dayHourSegmentTemplate let-segment="segment" let-locale="locale">
   <div
-    class="cal-hour-segment"
+    class="cal-hour-segment clickable"
     [ngClass]="segment.cssClass"
     (click)= "hourClicked(segment.date)">
     <div [hidden]="!segment.isStart" class="cal-time">
-      {{ segment.date | calendarDate:'dayViewHour':locale }}
+      {{ segment.date | date:'H' }}
     </div>
   </div>
 </ng-template>
@@ -30,7 +30,7 @@
   let-eventDropped="eventDropped">
   <div class="cal-day-headers">
     <div
-      class="cal-header"
+      class="cal-header clickable"
       *ngFor="let day of days; trackBy:trackByWeekDayHeaderDate"
       [class.cal-past]="day.isPast"
       [class.cal-today]="day.isToday"

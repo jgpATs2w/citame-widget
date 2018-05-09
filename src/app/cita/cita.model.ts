@@ -12,6 +12,7 @@ export interface Cita{
   inicio: Date | string;
   fin: Date | string;
 
+  notas?: string;
   duracion?: number;
   paciente?: User;
   terapeuta?: User;
