@@ -64,7 +64,8 @@ export class LoginComponent implements OnInit {
     });
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+  }
 
   loginFacebook() {
     this.userService.loginFacebook()
@@ -122,7 +123,13 @@ export class LoginComponent implements OnInit {
   private saveUserAndGo(user: User){
     if(user){
       this.userService.actions.setCurrentUser(user);
-      this.router.navigate(['calendario'], {queryParamsHandling: 'preserve', preserveFragment: true})
+      if(this.route.snapshot.queryParams.from){
+        const from= this.route.snapshot.queryParams.from;
+        let queryParams= this.route.snapshot.queryParams;
+
+        this.router.navigate([from], {queryParams: {...queryParams, from: undefined}});
+      }else
+        this.router.navigate(['calendario'], {queryParamsHandling: 'preserve', preserveFragment: true})
     }else{
       this.setupRegisterForm(this.userService.userFromFirebase);
       this.state= 2;

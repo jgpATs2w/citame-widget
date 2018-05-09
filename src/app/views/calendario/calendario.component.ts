@@ -208,7 +208,7 @@ export class CalendarioComponent implements OnInit, OnDestroy {
             this.calendarioService.actions.addCita( cita );
             this.refresh.next();
           }else{
-            this.router.navigate(['login'], {queryParamsHandling:'preserve'});
+            this.router.navigate(['/login'], {queryParams: {from: window.location.pathname}, queryParamsHandling:'merge'});
           }
         });
       }

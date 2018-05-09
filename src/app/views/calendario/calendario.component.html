@@ -57,7 +57,7 @@
       'calendar-day-full': day.badgeTotal>=dayMaxEvents,
       'calendar-day-free': day.badgeTotal<dayMaxEvents }">
     <div class="cal-cell-top">
-      <span class="cal-day-badge" *ngIf="day.badgeTotal > 0">{{ day.badgeTotal }}</span>
+      <span class="cal-day-badge" fxHide fxShow.gt-xs *ngIf="day.badgeTotal > 0">{{ day.badgeTotal }}</span>
       <span class="cal-day-number">{{ day.date | calendarDate:'monthViewDayNumber':locale }}</span>
     </div>
   </div>
