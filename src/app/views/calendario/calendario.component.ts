@@ -205,7 +205,13 @@ export class CalendarioComponent implements OnInit, OnDestroy {
             cita.inicio= this.calendarioService.formatDateTime(date);
             cita.fin= this.calendarioService.formatDateTime(addMinutes(date, 60));
 
-            this.calendarioService.actions.addCita( cita );
+            this.appService.apiPost("/citas", cita).subscribe(r=>{
+              if(r.success)
+                this.calendarioService.actions.addCita( r.data );
+              else
+                this.appService.snack(r.message);
+            });
+
             this.refresh.next();
           }else{
             this.router.navigate(['/login'], {queryParams: {from: window.location.pathname}, queryParamsHandling:'merge'});

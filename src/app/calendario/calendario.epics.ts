@@ -31,9 +31,9 @@ export class CalendarioEpics {
       .switchMap((action:ICitaAction)=>
                           this.appService
                                 .apiPost("/citas", action.payload)
-                                .map(_=>({
+                                .map(r=>({
                                   type: ApiActions.SERVER_SUCCESS,
-                                  payload: action.payload}))
+                                  payload: r.data}))
                                 .catch(error=>Observable.of({
                                   type: ApiActions.SERVER_FAILURE,
                                   payload: action.payload
