@@ -26,6 +26,7 @@ import {
 import { Subject } from 'rxjs/Subject';
 import { Observable,Subscription } from 'rxjs';
 
+import { environment } from '../../../environments/environment';
 import { AppService } from '../../app.service';
 import { CustomDateFormatter } from '../../calendario/custom-date-formatter.provider';
 import { CalendarioService } from '../../calendario/calendario.service';
@@ -269,7 +270,7 @@ export class CalendarioComponent implements OnInit, OnDestroy {
 
     insertIntoGoogleCalendar(cita){
       const key= this.route.snapshot.queryParams.key;
-      window.open(`http://localhost/citame-api/citas/google?key=${key}&cita_id=`+cita.id, "_blank");
+      window.open(`${environment.API_URL}/citas/google?key=${key}&cita_id=`+cita.id, "_blank");
     }
 
     deleteCita(cita){
