@@ -65,6 +65,7 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit() {
+    window.scrollTo(0,0);
   }
 
   loginFacebook() {

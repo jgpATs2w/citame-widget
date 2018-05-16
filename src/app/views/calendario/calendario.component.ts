@@ -119,6 +119,7 @@ export class CalendarioComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(){
+      window.scrollTo(0,0);
       this.userService.currentUser$.first().subscribe(user=>{
         this.currentUser= user;
         this.isPaciente=( !user || user.rol=='paciente' );

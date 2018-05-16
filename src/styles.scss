@@ -3,6 +3,7 @@
 body{
   background-color: white;
   font-family: Open Sans !important;
+  margin: 0 !important;
 }
 mat-toolbar{
   background-color: white !important;
@@ -77,4 +78,9 @@ mat-sidenav-container .mat-list-item-content:hover{
 }
 .active{
   text-decoration: underline;
+}
+
+.app-window-topbar{
+  background-color: #FDD849 !important;
+  padding: 0 0.5em 0 0 !important;
 }

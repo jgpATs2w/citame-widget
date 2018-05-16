@@ -3,6 +3,10 @@
 .toolbar-date-title::first-letter{
   text-transform: capitalize;
 }
+.toolbar-date-title{
+  text-align: center;
+  margin-left: 1em;
+}
 
 .calendar-container{
   min-height: 400px
@@ -42,6 +46,9 @@ mat-toolbar {
       width: 20px; height: 20px;
     }
   }
+}
+.app-cal-today{
+  border: 1px solid red !important;
 }
 
 .app-syncing{

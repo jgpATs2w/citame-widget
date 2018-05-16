@@ -78,6 +78,7 @@ export class PacienteComponent implements OnInit {
     ///
     ngOnInit() {
 
+      window.scrollTo(0,0);
       this.userService.currentUser$
               .subscribe(paciente=>{
                 if(paciente){

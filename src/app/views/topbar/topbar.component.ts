@@ -3,7 +3,6 @@ import {
   ActivatedRoute,
   Router
 } from '@angular/router';
-import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material';
 import { Observable } from "rxjs/Rx";
 
 import { User } from '../../user/user.model';
@@ -21,8 +20,7 @@ export class TopbarComponent implements OnInit {
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private userService: UserService,
-    public dialog: MatDialog
+    private userService: UserService
   ) {
     this.user$= this.userService.currentUser$;
   }
@@ -30,38 +28,14 @@ export class TopbarComponent implements OnInit {
   ngOnInit() {}
 
   logout(){
-
-    let dialogRef = this.dialog.open(LogoutDialog, {
-      width: '250px'
-    });
-
-    dialogRef.afterClosed().subscribe(ok => {
-      if(ok){
-        this.userService
-            .logout()
-            .subscribe(()=>{
-              this.router.navigate(['/calendario'], {queryParamsHandling:'preserve'});
-              this.userService.actions.setCurrentUser(null);
-            });
-      }
-    });
+    this.userService
+        .logout()
+        .subscribe(()=>{
+          this.router.navigate(['/calendario'], {queryParamsHandling:'preserve'});
+          this.userService.actions.setCurrentUser(null);
+        });
   }
   clinicaChanged(clinica_id:string){
     this.router.navigate(['.'], { relativeTo: this.route, queryParams: { clinica_id: clinica_id }, queryParamsHandling: 'merge', preserveFragment: true });
   }
-}
-
-@Component({
-  selector: 'app-logout-dialog',
-  templateUrl: 'logout-dialog.html',
-})
-export class LogoutDialog {
-
-  constructor(
-    public dialogRef: MatDialogRef<LogoutDialog>) { }
-
-  onNoClick(): void {
-    this.dialogRef.close();
-  }
-
 }

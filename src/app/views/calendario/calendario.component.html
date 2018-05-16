@@ -21,6 +21,7 @@
   <div class="cal-event"
   [style.backgroundColor]="weekEvent.event.color.secondary"
   [style.borderColor]="weekEvent.event.color.primary"
+  [ngStyle.lt-sm]="{'font-size.px': 10}"
   (click)="eventClicked(weekEvent)">
     {{weekEvent.event.start|date:'HH:mm'}} {{weekEvent.event.title}}
   </div>
@@ -75,22 +76,23 @@
       (dragEnter)="day.dragOver = true"
       (dragLeave)="day.dragOver = false"
       (drop)="day.dragOver = false; eventDropped.emit({event: $event.dropData.event, newStart: day.date})">
-      <b fxHide fxShow.gt-sm>{{ day.date | calendarDate:'weekViewColumnHeader':locale }}</b><br>
-      <span fxHide fxShow.gt-sm>{{ day.date | calendarDate:'weekViewColumnSubHeader':locale }}</span>
-      <b fxHide.gt-sm>{{ day.date | date:'EEEEE':locale }}</b><br>
-      <b fxHide.gt-sm>{{ day.date | date:'dd/MM':locale }}</b><br>
+      <b fxHide fxShow.gt-xs>{{ day.date | calendarDate:'weekViewColumnHeader':locale }}</b><br>
+      <span fxHide fxShow.gt-xs>{{ day.date | calendarDate:'weekViewColumnSubHeader':locale }}</span>
+      <b fxHide.gt-xs style="font-size: 10px">{{ day.date | date:'EEEEE':locale }}</b><br>
+      <b fxHide.gt-xs style="font-size: 10px">{{ day.date | date:'dd/MM':locale }}</b><br>
     </div>
   </div>
 </ng-template>
 
 <ng-template #monthCellTemplate let-day="day" let-locale="locale">
   <div [ngClass]="{
+      'app-cal-today': day.isToday,
       'calendar-day-disabled': day.isWeekend || day.isPast,
       'calendar-day-full': day.badgeTotal>=dayMaxEvents,
       'calendar-day-free': day.badgeTotal<dayMaxEvents }">
     <div class="cal-cell-top">
+      <span class="cal-day-number" style="font-size: 1.2em;">{{ day.date | calendarDate:'monthViewDayNumber':locale }}</span>
       <span class="cal-day-badge" fxHide fxShow.gt-xs *ngIf="day.badgeTotal > 0">{{ day.badgeTotal }}</span>
-      <span class="cal-day-number">{{ day.date | calendarDate:'monthViewDayNumber':locale }}</span>
     </div>
   </div>
 
@@ -109,8 +111,8 @@
       [class.cal-future]="day.isFuture"
       [class.cal-weekend]="day.isWeekend"
       [ngClass]="day.cssClass">
-      <span fxHide fxShow.gt-sm>{{ day.date | calendarDate:'monthViewColumnHeader':locale }}</span>
-      <span fxHide.gt-sm>{{ day.date | date:'EEEEE':locale }}</span>
+      <span fxHide fxShow.gt-xs>{{ day.date | calendarDate:'monthViewColumnHeader':locale }}</span>
+      <span fxHide.gt-xs>{{ day.date | date:'EEEEE':locale }}</span>
     </div>
   </div>
 </ng-template>
@@ -126,6 +128,7 @@
       <mat-toolbar color="none">
 
         <mat-toolbar-row>
+          <span class="toolbar-date-title">{{ viewDate | date:'MMMM y' }}</span>
           <span class="spacer"></span>
           <mat-form-field class="select-view">
             <mat-select [(value)]="view" (change)="selectView(view)">
@@ -159,15 +162,11 @@
             </button>
           </div>
 
-
-          <span fxHide fxShow.gt-sm class="toolbar-date-title">{{ viewDate | calendarDate:(view + 'ViewTitle'):locale}}</span>
+          <span class="toolbar-date-title">{{ viewDate | calendarDate:(view + 'ViewTitle'):locale}}</span>
 
           <span class="spacer"></span>
 
           <button mat-icon-button (click)="updateState()"><mat-icon>refresh</mat-icon></button>
-        </mat-toolbar-row>
-        <mat-toolbar-row fxHide.gt-sm *ngIf="view=='day'" class="toolbar-date-title">
-          {{ viewDate | calendarDate:(view + 'ViewTitle'):locale}}
         </mat-toolbar-row>
       </mat-toolbar>
         <div [ngSwitch]="view">
