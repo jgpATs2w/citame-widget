@@ -64,8 +64,11 @@ export class CalendarioComponent implements OnInit, OnDestroy {
     colors: any;
     salaId: string='1';
     isPaciente: boolean= true;
+    currentUser: User=null;
     routeParamsSubscription: Subscription;
     routeQueryParamsSubscription: Subscription;
+
+    syncing: boolean= false;
 
     constructor(
       private router: Router,
@@ -76,7 +79,7 @@ export class CalendarioComponent implements OnInit, OnDestroy {
     ) {
       this.colors= calendarioService.colors;
 
-      this.events$= calendarioService.events$;
+      this.events$= this.calendarEvents$;
 
       this.routeParamsSubscription= route.params.subscribe(params=>{
         if(params['view'])
@@ -93,6 +96,7 @@ export class CalendarioComponent implements OnInit, OnDestroy {
         }
 
         this.updateState();
+        this.calendarioService.setupRefresh(this.refresh);
       });
 
       this.routeQueryParamsSubscription= route.queryParams.subscribe(params=>{
@@ -115,7 +119,10 @@ export class CalendarioComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(){
-      this.userService.currentUser$.first().subscribe(user=>this.isPaciente=( !user || user.rol=='paciente' ));
+      this.userService.currentUser$.first().subscribe(user=>{
+        this.currentUser= user;
+        this.isPaciente=( !user || user.rol=='paciente' );
+      });
     }
     ngOnDestroy(){
       this.calendarioService.stopCitasLoop();
@@ -173,7 +180,10 @@ export class CalendarioComponent implements OnInit, OnDestroy {
     }
 
     eventClicked({ event }: { event: CalendarEvent }): void {
-      this.router.navigate(['login'], {queryParamsHandling:'preserve'});
+      if(this.currentUser)
+        this.goToDay(event.meta.inicio);
+      else
+        this.router.navigate(['login'], {queryParamsHandling:'preserve'});
     }
     /*
     * Called when event is droped
@@ -181,13 +191,19 @@ export class CalendarioComponent implements OnInit, OnDestroy {
     eventTimesChanged({event, newStart, newEnd}: CalendarEventTimesChangedEvent): void {
       if(
         this.isValidDate(newStart) && this.isValidDate(newEnd)){
-
+        const previousCita= {...event.meta};
         event.start= newStart;
         event.end= newEnd;
         event.meta.inicio= this.calendarioService.formatDateTime(event.start);
         event.meta.fin= this.calendarioService.formatDateTime(event.end);
 
-        this.calendarioService.updateCita( event.meta );
+        this.calendarioService.updateCita( event.meta ).subscribe(r=>{
+          if(!r.success){
+            this.calendarioService.actions.updateCita(previousCita);
+            this.refresh.next();
+          }
+
+        });
         this.refresh.next();
       }
     }
@@ -197,6 +213,8 @@ export class CalendarioComponent implements OnInit, OnDestroy {
     }
 
     addEvent(date: Date=new Date()): void {
+      if(this.syncing) return;
+
       if(this.isValidDate(date)){
         this.userService.currentUser$.first().subscribe(user=>{
           if(user){
@@ -204,15 +222,12 @@ export class CalendarioComponent implements OnInit, OnDestroy {
             cita.paciente_id= +user.id;
             cita.inicio= this.calendarioService.formatDateTime(date);
             cita.fin= this.calendarioService.formatDateTime(addMinutes(date, 60));
-
-            this.appService.apiPost("/citas", cita).subscribe(r=>{
-              if(r.success)
-                this.calendarioService.actions.addCita( r.data );
-              else
-                this.appService.snack(r.message);
+            this.syncing= true;
+            this.calendarioService.addCita(cita).subscribe(r=>{
+              this.syncing= false;
+              this.refresh.next();
             });
 
-            this.refresh.next();
           }else{
             this.router.navigate(['/login'], {queryParams: {from: window.location.pathname}, queryParamsHandling:'merge'});
           }
@@ -250,5 +265,66 @@ export class CalendarioComponent implements OnInit, OnDestroy {
     hourClicked(date: Date): void {
       this.addEvent(date);
     }
+
+    insertIntoGoogleCalendar(cita){
+      const key= this.route.snapshot.queryParams.key;
+      window.open(`http://localhost/citame-api/citas/google?key=${key}&cita_id=`+cita.id, "_blank");
+    }
+
+    deleteCita(cita){
+      this.calendarioService.deleteCita(cita).subscribe(r=>{
+        if(r.success){
+          this.appService.snack("cita eliminada", "deshacer").subscribe(c=>{
+            cita.eliminador_id=null;
+            cita.eliminada=null;
+            this.calendarioService
+                  .updateCita(cita).subscribe(r=>{
+                    this.calendarioService.actions.addCita(r.data);
+                    this.refresh.next();
+                  });
+          });
+        }
+      });
+    }
+    get calendarEvents$(): Observable<any> {
+        return Observable.combineLatest(this.calendarioService.citas$,this.userService.currentUser$)
+                      .map(([citas, user]) => {
+                        return citas.map((cita: Cita) => {
+
+                          if(!user || user.rol == 'paciente'){
+                            if(user && user.id == cita.paciente_id){
+                              return {
+                                id: Math.random(),
+                                title: 'Tú',
+                                start: typeof cita.inicio == "string"? new Date(cita.inicio) : cita.inicio,
+                                end: typeof cita.fin == "string"? new Date(cita.fin) : cita.fin,
+                                color: this.calendarioService.colors.green,
+                                draggable: true,
+                                meta: cita
+                              };
+                            }else{
+                              return {
+                                title: 'Reservado',
+                                start: typeof cita.inicio == "string"? new Date(cita.inicio) : cita.inicio,
+                                end: typeof cita.fin == "string"? new Date(cita.fin) : cita.fin,
+                                color: this.calendarioService.colors.red,
+                                draggable: false,
+                                meta: cita
+                              };
+                            }
+                          }else{
+                            return {
+                              title: cita.paciente? cita.paciente.nombre: cita.paciente_id,
+                              start: typeof cita.inicio == "string"? new Date(cita.inicio) : cita.inicio,
+                              end: typeof cita.fin == "string"? new Date(cita.fin) : cita.fin,
+                              color: this.calendarioService.colors.yellow,
+                              draggable: true,
+                              meta: cita
+                            };
+                          }
+
+                        });
+                      });
+      };
 
 }

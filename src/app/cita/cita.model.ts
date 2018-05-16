@@ -16,6 +16,7 @@ export interface Cita{
   duracion?: number;
   paciente?: User;
   terapeuta?: User;
+  googleUrl?: string;
 }
 
 const inicio= setMinutes(new Date(), 0);

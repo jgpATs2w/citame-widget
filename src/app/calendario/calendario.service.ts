@@ -23,7 +23,7 @@ import {
 } from 'date-fns';
 
 import { Http, Response } from '@angular/http';
-import { Observable, Subscription } from 'rxjs';
+import { Observable, Subscription, Subject } from 'rxjs';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/debounceTime';
 
@@ -43,8 +43,8 @@ const colors: any = {
     secondary: 'white'
   },
   red: {
-    primary: '#ad2121',
-    secondary: '#FAE3E3'
+    primary: '#ef5350',
+    secondary: '#ef5350'
   },
   blue: {
     primary: '#1e90ff',
@@ -55,8 +55,8 @@ const colors: any = {
     secondary: '#FDF1BA'
   },
   green: {
-    primary: '#0f0',
-    secondary: '#0f0'
+    primary: '#8BC34A',
+    secondary: '#8BC34A'
   }
 };
 
@@ -67,6 +67,7 @@ export class CalendarioService {
   citasSubscription: Subscription;
   currentUser: User;
   horario:any= [[9,14], [16,20]];
+  refreshCalendar: Subject<any> = new Subject();
 
   constructor(
     private ngRedux: NgRedux<AppState>,
@@ -82,6 +83,8 @@ export class CalendarioService {
 
     this.citasFromServer$ = appService.apiGet('/citas.json?').pluck('data');
   }
+
+  setupRefresh(refresh){this.refreshCalendar=refresh;};
 
   citasFromServerForPaciente$(paciente_id):Observable<Cita[]>{
     return this.appService.apiGet('/citas.json?paciente_id='+paciente_id).pluck('data');
@@ -140,71 +143,39 @@ export class CalendarioService {
             + hasta;
   }
 
-  public get events$(): Observable<any> {
-    const onDeleteEvent= ({ event }: { event: CalendarEvent }): void => {
-                            this.deleteCita(event.meta);
-                          };
-
-    return Observable.combineLatest(this.citas$,this.userService.currentUser$)
-                  .map(([citas, user]) => {
-                    return citas.map((cita: Cita) => {
-                      if(!user || user.rol == 'paciente'){
-                        if(user && user.id == cita.paciente_id){
-                          return {
-                            id: Math.random(),
-                            title: 'Tú',
-                            start: typeof cita.inicio == "string"? new Date(cita.inicio) : cita.inicio,
-                            end: typeof cita.fin == "string"? new Date(cita.fin) : cita.fin,
-                            color: colors.yellow,
-                            draggable: true,
-                            meta: cita,
-                            actions: [
-                              {},
-                              {
-                                label: '<i class="fa fa-fw fa-times"></i>',
-                                onClick: onDeleteEvent
-                              }
-                            ]
-                          };
-                        }else{
-                          return {
-                            title: 'Reservado',
-                            start: typeof cita.inicio == "string"? new Date(cita.inicio) : cita.inicio,
-                            end: typeof cita.fin == "string"? new Date(cita.fin) : cita.fin,
-                            color: colors.blue,
-                            draggable: false,
-                            meta: cita
-                          };
-                        }
-                      }else{
-                        return {
-                          title: cita.paciente? cita.paciente.nombre: cita.paciente_id,
-                          start: typeof cita.inicio == "string"? new Date(cita.inicio) : cita.inicio,
-                          end: typeof cita.fin == "string"? new Date(cita.fin) : cita.fin,
-                          color: colors.yellow,
-                          draggable: true,
-                          meta: cita,
-                          actions: [
-                            {},
-                            {
-                              label: '<i class="fa fa-fw fa-times"></i>',
-                              onClick: onDeleteEvent
-                            }
-                          ]
-                        };
-                      }
-
-                    });
-                  });
-  };
 
   deleteCita(cita: Cita){
-    this.actions.deleteCita(cita);
+    const eliminador_id= this.appService.current_id;
+    return this.appService
+                      .apiDelete(`/citas/${cita.id}?eliminador_id=${eliminador_id}`)
+                      .do(r=>{
+                        if(r.success)
+                          this.actions.deleteCita(cita);
+                        else
+                          this.appService.snack(r.message);
+                      })
   }
 
   updateCita( cita: Cita ){
+    return this.appService
+                      .apiPost("/citas/"+cita.id, cita)
+                      .do(r=>{
+                        if(r.success)
+                          this.actions.updateCita(cita);
+                        else
+                          this.appService.snack(r.message);
+                      });
+  }
 
-    this.actions.updateCita(cita);
+  addCita( cita: Cita ){
+    return this.appService
+                      .apiPost("/citas?recordatorio", cita)
+                      .do(r=>{
+                        if(r.success)
+                          this.actions.addCita(r.data);
+                        else
+                          this.appService.snack(r.message);
+                      });
   }
 
   setCurrentCita( cita: Cita ){

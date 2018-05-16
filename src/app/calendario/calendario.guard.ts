@@ -7,12 +7,14 @@ import 'rxjs/add/operator/take';
 
 import { NgRedux, select } from '@angular-redux/store';
 import { AppService } from '../app.service';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class CalendarioGuard implements CanActivate {
 
   constructor(
       private appService: AppService,
+      private userService: UserService,
       private router: Router) {}
 
   canActivate(
@@ -26,6 +28,8 @@ export class CalendarioGuard implements CanActivate {
 
       this.appService.readQuery(queryParams);
 
-      return Observable.of(true);
+      return this.userService.currentUser$
+              .do(u=>{if(u) this.appService.setCurrentId(u.id)})
+              .map(_=>true);
   }
 }

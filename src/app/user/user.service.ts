@@ -115,4 +115,36 @@ export class UserService {
   sendReminder(email:string): Observable<ApiResponse>{
     return Observable.of({success: true});
   }
+  addUser(user:User){
+
+    return this.appService
+                    .apiPost("/usuarios", user)
+                    .do(r=>{
+                      if(r.success)
+                        this.actions.addUser(user);
+                      else
+                        this.appService.snack(r.message);
+                    });
+  }
+  updateUser(user:User){
+    return this.appService
+                    .apiPost("/usuarios/"+user.id, user)
+                    .do(r=>{
+                      if(r.success)
+                        this.actions.updateUsuario(user);
+                      else
+                        this.appService.snack(r.message);
+                    });
+  }
+  deleteUser(user:User){
+
+    return this.appService
+                  .apiDelete("/usuarios/"+user.id)
+                  .do(r=>{
+                    if(r.success)
+                      this.actions.deleteUsuario(user);
+                    else
+                      this.appService.snack(r.message);
+                  });
+  }
 }

@@ -63,13 +63,15 @@ export class PacienteComponent implements OnInit {
     }
     delete(){
       if(window.confirm("Se eliminará el usuario definitivamente, incluidas sus citas y datos personales")){
-        this.userService.actions.deleteUsuario(this.form.get('id').value);
-        this.appService.snack("Se ha eliminado el paciente").subscribe(()=>console.info("deshacer"));
-        this.userService.logout()
-        .subscribe(()=>{
-          this.router.navigate(['/calendario'], {queryParamsHandling:'preserve'});
-          this.userService.actions.setCurrentUser(null);
-        });;
+        this.userService.deleteUser(this.form.value).subscribe(r=>{
+          if(r.success){
+            this.userService.logout()
+            .subscribe(()=>{
+              this.router.navigate(['/calendario'], {queryParamsHandling:'preserve'});
+              this.userService.actions.setCurrentUser(null);
+            });
+          }
+        });
       }
     }
 
@@ -94,22 +96,16 @@ export class PacienteComponent implements OnInit {
 
     setupForm(paciente: User){
       this.form.patchValue(paciente);
-
-       if(this.formSubscription==null){
-         this.userService.actions.setCurrentPaciente(paciente);
-         this.formSubscription= this.form.valueChanges.debounceTime(1000).subscribe(
-             (form: any) => {
-               //if(!this.form.valid) return;
-               this.userService.actions.updateUsuario(form);
-             }
-           )
-       }
     }
 
     save(){
       if(!this.form.valid) return;
 
-      this.userService.actions.updateUsuario(this.form.value);
+      const paciente= this.form.value;
+      if(paciente.id){
+        this.userService.updateUser(paciente).subscribe(r=>{if(r.success) this.close()});
+      }else
+        this.userService.addUser(paciente).subscribe(r=>{if(r.success) this.close()});
     }
 
 

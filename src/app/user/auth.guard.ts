@@ -35,6 +35,7 @@ export class AuthGuard implements CanActivate {
       this.appService.readQuery(queryParams);
 
       return this.userService.currentUser$
+              .do(u=>{if(u) this.appService.setCurrentId(u.id)})
               .map(currentUser=>currentUser!=null)
               .do((userActivated:boolean)=>{
                 if(!userActivated)

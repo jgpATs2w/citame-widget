@@ -20,7 +20,6 @@ import { AngularFireAuthModule } from 'angularfire2/auth';
 import { environment } from '../environments/environment';
 import { AppState, INITIAL_STATE, rootReducer } from './app.store';
 import { UserActions, CalendarioActions } from './app.actions';
-import { UserEpics, CalendarioEpics } from './app.epics';
 
 import { AuthGuard } from './user/auth.guard';
 import { LoginGuard } from './user/login.guard';
@@ -36,6 +35,7 @@ import { LoginComponent } from './views/login/login.component';
 import { CalendarioComponent } from './views/calendario/calendario.component';
 import { PacienteComponent } from './views/paciente/paciente.component';
 import { ErrorComponent } from './views/error/error.component';
+import { EscapeHtmlPipe, EscapeUrlPipe } from './app.pipes';
 
 registerLocaleData(localeEs);
 @NgModule({
@@ -46,7 +46,8 @@ registerLocaleData(localeEs);
     LoginComponent,
     CalendarioComponent,
     PacienteComponent,
-    ErrorComponent
+    ErrorComponent,
+    EscapeHtmlPipe, EscapeUrlPipe
   ],
   imports: [
     BrowserModule,
@@ -70,7 +71,7 @@ registerLocaleData(localeEs);
     AuthGuard, CalendarioGuard, LoginGuard,
     CalendarioService,
     UserActions, CalendarioActions,
-    UserEpics, CalendarioEpics
+    EscapeHtmlPipe, EscapeUrlPipe
   ],
   bootstrap: [AppComponent]
 })
@@ -78,7 +79,6 @@ export class AppModule {
   constructor(
       ngRedux: NgRedux<AppState>,
       devTools: DevToolsExtension,
-      userEpics: UserEpics, calendarioEpics: CalendarioEpics,
       dateAdapter: DateAdapter<Date>
     ){
       const enhancers = [persistState('',{key:'redux-citame-widget'})]
@@ -86,8 +86,6 @@ export class AppModule {
         enhancers.push(devTools.enhancer());
       const middleware= [
         //createLogger(),
-        ...userEpics.getEpics(),
-        ...calendarioEpics.getEpics()
       ];
 
       ngRedux.configureStore(

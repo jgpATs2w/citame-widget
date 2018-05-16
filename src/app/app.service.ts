@@ -19,6 +19,7 @@ export class AppService {
   public clinicaId: string = '1';
   salaId: string;
   productoId: string;
+  current_id: string;
   key: string;
 
   ERROR_NO_KEY: number= 1;
@@ -32,6 +33,9 @@ export class AppService {
     private snackBar: MatSnackBar
   ) {}
 
+  setCurrentId(id){
+    this.current_id=id;
+  }
   readQuery(params){
       if(params.clinica_id)
         this.clinicaId= params.clinica_id;
@@ -75,14 +79,14 @@ export class AppService {
                   .map(res=>res.json());
   }
 
-  apiDelete(url:string): Observable<Response>{
+  apiDelete(url:string): Observable<ApiResponse>{
     var headers = new Headers();
     headers.append("Accept", 'application/json');
     headers.append('Content-Type', 'application/json' );
     let options = new RequestOptions({ 'headers': headers });
     return this
             .http
-            .delete( environment.API_URL +url, options)
+            .delete( environment.API_URL +url+ '&clinica_id=' + this.clinicaId + '&key=' + this.key, options)
             .map(res=>res.json());
   }
 

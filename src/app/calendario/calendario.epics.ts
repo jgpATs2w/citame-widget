@@ -20,8 +20,8 @@ export class CalendarioEpics {
   public getEpics(){
     return [
       createEpicMiddleware(this.addCita),
-      createEpicMiddleware(this.updateCita),
-      createEpicMiddleware(this.deleteCita)
+      createEpicMiddleware(this.updateCita)//,
+      //createEpicMiddleware(this.deleteCita)
     ]
   }
 

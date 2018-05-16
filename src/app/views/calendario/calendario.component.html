@@ -18,10 +18,42 @@
 </ng-template>
 
 <ng-template #weekEventTemplate let-weekEvent="weekEvent" let-locale="locale">
-  <div class="cal-event" (click)="eventClicked(weekEvent)">
+  <div class="cal-event"
+  [style.backgroundColor]="weekEvent.event.color.secondary"
+  [style.borderColor]="weekEvent.event.color.primary"
+  (click)="eventClicked(weekEvent)">
     {{weekEvent.event.start|date:'HH:mm'}} {{weekEvent.event.title}}
   </div>
 </ng-template>
+
+<ng-template
+  #dayEventTemplate
+  let-dayEvent="dayEvent"
+  let-tooltipPlacement="tooltipPlacement"
+  let-eventClicked="eventClicked"
+  let-tooltipTemplate="tooltipTemplate"
+  let-tooltipAppendToBody="tooltipAppendToBody">
+  <div
+    *ngIf="dayEvent.event.meta.id"
+    class="cal-event"
+    [style.backgroundColor]="dayEvent.event.color.secondary"
+    [style.borderColor]="dayEvent.event.color.primary"
+    [mwlCalendarTooltip]="dayEvent.event.title | calendarEventTitle:'dayTooltip':dayEvent.event"
+    [tooltipPlacement]="tooltipPlacement"
+    [tooltipEvent]="dayEvent.event"
+    [tooltipTemplate]="tooltipTemplate"
+    [tooltipAppendToBody]="tooltipAppendToBody"
+    fxLayout="column">
+    <div class="app-event-buttons" *ngIf="dayEvent.event.meta.paciente_id==currentUser?.id">
+      <button mat-icon-button (click)="insertIntoGoogleCalendar(dayEvent.event.meta)" title="añadir a google calendar"><i class="fa fa-google material-icons"></i></button>
+      <button mat-icon-button (click)="deleteCita(dayEvent.event.meta)"><i class="material-icons" style="font-size: 16px;">delete</i></button>
+    </div>
+    <span class="app-event-title" fxFlexFill fxLayoutAlign="center center">
+      {{dayEvent.event.title}}
+    </span>
+  </div>
+</ng-template>
+
 <ng-template
   #weekHeaderTemplate
   let-days="days"
@@ -87,6 +119,9 @@
 
 <mat-sidenav-container>
   <mat-sidenav-content>
+    <div class="app-syncing" *ngIf="syncing" fxFlexFill fxLayoutAlign="center center">
+      <mat-spinner></mat-spinner>
+    </div>
     <div class="calendar-container" *ngIf="events$ | async; else loading; let events">
       <mat-toolbar color="none">
 
@@ -177,7 +212,8 @@
             [locale]="locale"
             [dayStartHour]="9"
             [dayEndHour]="dayEndHour"
-            [hourSegmentTemplate]="dayHourSegmentTemplate">
+            [hourSegmentTemplate]="dayHourSegmentTemplate"
+            [eventTemplate]="dayEventTemplate">
           </mwl-calendar-day-view>
         </div>
     </div>
