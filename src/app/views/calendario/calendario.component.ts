@@ -273,6 +273,12 @@ export class CalendarioComponent implements OnInit, OnDestroy {
       window.open(`${environment.API_URL}/citas/google?key=${key}&cita_id=`+cita.id, "_blank");
     }
 
+    downloadICS(cita){
+      const key= this.route.snapshot.queryParams.key;
+      const url= `${environment.API_URL}/citas/${cita.id}.ics?key=${key}`;
+      window.open( url, "_blank");
+    }
+
     deleteCita(cita){
       this.calendarioService.deleteCita(cita).subscribe(r=>{
         if(r.success){

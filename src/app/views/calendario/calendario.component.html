@@ -47,9 +47,10 @@
     fxLayout="column">
     <div class="app-event-buttons" *ngIf="dayEvent.event.meta.paciente_id==currentUser?.id">
       <button mat-icon-button (click)="insertIntoGoogleCalendar(dayEvent.event.meta)" title="añadir a google calendar"><i class="fa fa-google material-icons"></i></button>
+      <button mat-icon-button (click)="downloadICS(dayEvent.event.meta)" title="exportar a iCal u otros calendarios"><i class="material-icons" style="font-size: 16px;">save_alt</i></button>
       <button mat-icon-button (click)="deleteCita(dayEvent.event.meta)"><i class="material-icons" style="font-size: 16px;">delete</i></button>
     </div>
-    <span class="app-event-title" fxFlexFill fxLayoutAlign="center center">
+    <span class="app-event-title" fxFlexFill fxLayoutAlign="start center">
       {{dayEvent.event.title}}
     </span>
   </div>
@@ -127,7 +128,8 @@
     <div class="calendar-container" *ngIf="events$ | async; else loading; let events">
       <mat-toolbar color="none">
 
-        <mat-toolbar-row>
+        <mat-toolbar-row
+         [ngStyle.lt-sm]="{'font-size.em': 0.8}">
           <span class="toolbar-date-title">{{ viewDate | date:'MMMM y' }}</span>
           <span class="spacer"></span>
           <mat-form-field class="select-view">
@@ -139,7 +141,7 @@
           </mat-form-field>
         </mat-toolbar-row>
 
-        <mat-toolbar-row>
+        <mat-toolbar-row [ngStyle.lt-sm]="{'font-size.em': 0.8}">
           <button
             mat-button
             (click)="today()"
