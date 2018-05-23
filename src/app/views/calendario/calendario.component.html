@@ -46,9 +46,9 @@
     [tooltipAppendToBody]="tooltipAppendToBody"
     fxLayout="column">
     <div class="app-event-buttons" *ngIf="dayEvent.event.meta.paciente_id==currentUser?.id">
-      <button mat-icon-button (click)="insertIntoGoogleCalendar(dayEvent.event.meta)" title="añadir a google calendar"><i class="fa fa-google material-icons"></i></button>
-      <button mat-icon-button (click)="downloadICS(dayEvent.event.meta)" title="exportar a iCal u otros calendarios"><i class="material-icons" style="font-size: 16px;">save_alt</i></button>
-      <button mat-icon-button (click)="deleteCita(dayEvent.event.meta)"><i class="material-icons" style="font-size: 16px;">delete</i></button>
+      <button mat-icon-button (click)="insertIntoGoogleCalendar(dayEvent.event.meta)" title="añadir a google calendar" class="small"><i class="fa fa-google material-icons"></i></button>
+      <button mat-icon-button (click)="downloadICS(dayEvent.event.meta)" title="exportar a iCal u otros calendarios" class="small"><i class="material-icons">save_alt</i></button>
+      <button mat-icon-button (click)="deleteCita(dayEvent.event.meta)" class="small"><i class="material-icons">delete</i></button>
     </div>
     <span class="app-event-title" fxFlexFill fxLayoutAlign="start center">
       {{dayEvent.event.title}}

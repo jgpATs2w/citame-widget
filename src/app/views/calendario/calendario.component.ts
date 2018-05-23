@@ -85,16 +85,21 @@ export class CalendarioComponent implements OnInit, OnDestroy {
       this.routeParamsSubscription= route.params.subscribe(params=>{
         if(params['view'])
           this.view= params['view'];
-        if(params['date']){
-          if(this.view=='week'){
+          if(params['date']){
             const pieces= params['date'].split('-');
-            let d= new Date(pieces[0]);
-            if(pieces.length>1)
-              d= addWeeks(d, pieces[1]-1);
-            this.viewDate= d;
-          }else
-            this.viewDate= new Date(params['date']);
-        }
+            const year= pieces[0];
+
+            if(this.view=='week'){
+              let d= new Date(year, 0);
+              if(pieces.length>1)
+                d= addWeeks(d, pieces[1]-1);
+              this.viewDate= d;
+            }else{
+              const month= pieces[1]? +pieces[1]-1:0;
+              const day= pieces[2]? pieces[2]:1;
+              this.viewDate= new Date(year, month, day);
+            }
+          }
 
         this.updateState();
         this.calendarioService.setupRefresh(this.refresh);
@@ -298,6 +303,12 @@ export class CalendarioComponent implements OnInit, OnDestroy {
         return Observable.combineLatest(this.calendarioService.citas$,this.userService.currentUser$)
                       .map(([citas, user]) => {
                         return citas.map((cita: Cita) => {
+                          cita.inicio= (''+cita.inicio).replace(/\s/g, "T");
+                          cita.fin= (''+cita.fin).replace(/\s/g, "T");
+                          if(cita.inicio.indexOf('+')<=0)//FIXME support several timezones??
+                            cita.inicio+='+02:00';
+                          if(cita.fin.indexOf('+')<=0)
+                            cita.fin+='+02:00';
 
                           if(!user || user.rol == 'paciente'){
                             if(user && user.id == cita.paciente_id){

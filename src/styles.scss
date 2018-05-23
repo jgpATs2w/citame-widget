@@ -84,3 +84,22 @@ mat-sidenav-container .mat-list-item-content:hover{
   background-color: #FDD849 !important;
   padding: 0 0.5em 0 0 !important;
 }
+
+.mat-icon-button.small {
+  width: $icon-small-container-size;
+  height: $icon-small-container-size;
+  line-height: $icon-small-container-size;
+
+  .mat-icon, .mat-icon-button i {
+    line-height: $icon-small-size;
+  }
+
+  .mat-icon {
+    width: $icon-small-size;
+    height: $icon-small-size;
+  }
+
+  .material-icons {
+    font-size: $icon-small-size;
+  }
+}
