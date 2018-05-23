@@ -1,5 +1,5 @@
 <div fxLayout="column" fxLayoutAlign="center center">
-  <header>
+  <header [ngStyle.xs]="{'margin-top.em':1}" [ngStyle.gt-xs]="{'margin-top.em':4}">
     <img src="assets/logo.png">
     <h1>citame.click</h1>
   </header>
@@ -10,8 +10,8 @@
     <mat-card fxFlexFill *ngIf="state==0">
       <mat-card-header fxLayoutAlign="center center">
         <mat-card-title>
-          <p *ngIf="!error">Identifícate...</p>
-          <p *ngIf="error">{{error}}</p>
+          <p *ngIf="!message">Identifícate...</p>
+          <p *ngIf="message">{{message}}</p>
         </mat-card-title>
       </mat-card-header>
 
@@ -74,8 +74,10 @@
                 <button
                   type="submit"
                   [disabled]="!loginForm.valid"
+                  *ngIf="!sending"
                   class="login-submit"
                   mat-icon-button><mat-icon>input</mat-icon></button>
+                <mat-spinner *ngIf="sending" [diameter]="20"></mat-spinner>
               </div>
               <div fxLayout="row" fxLayoutAlign="center bottom">
                 <a (click)="remindPassword()" class="reminder-link">No recuerdo mi contraseña</a>
@@ -122,7 +124,10 @@
                </mat-form-field>
 
                <div fxLayout="row" fxLayoutAlign="end center">
-                 <button type="submit" mat-icon-button><mat-icon>send</mat-icon></button>
+                 <button
+                    *ngIf="!sending" type="submit" mat-icon-button><mat-icon>send</mat-icon></button>
+
+                  <mat-spinner *ngIf="sending" [diameter]="20"></mat-spinner>
                </div>
               </form>
         </mat-card-content>

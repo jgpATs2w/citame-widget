@@ -77,8 +77,8 @@ export class AppModule {
       dateAdapter: DateAdapter<Date>
     ){
       const enhancers = [persistState('',{key:'redux-citame-widget'})]
-      if(devTools.isEnabled && !environment.production)
-        enhancers.push(devTools.enhancer());
+      //if(devTools.isEnabled && !environment.production)
+        //enhancers.push(devTools.enhancer());
       const middleware= [
         //createLogger(),
       ];

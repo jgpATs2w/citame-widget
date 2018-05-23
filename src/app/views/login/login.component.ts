@@ -38,8 +38,9 @@ export class LoginComponent implements OnInit {
 
   loginForm: FormGroup;
   registerForm: FormGroup;
-  error: string;
+  message: string;
   state: number=0;
+  sending: boolean= false;
 
   constructor(
     private router: Router, private route: ActivatedRoute,
@@ -69,26 +70,34 @@ export class LoginComponent implements OnInit {
   }
 
   loginFacebook() {
+    this.message= "validando...";
+    this.sending= true;
     this.userService.loginFacebook()
     .subscribe((user: User)=>{
       this.saveUserAndGo(user);
-    }, console.error);
+    }, error=>this.displayError(error, true));
   }
 
   loginGoogle() {
+    this.message= "validando...";
+    this.sending= true;
     this.userService
       .loginGoogle()
-      .subscribe((user: User)=>this.saveUserAndGo(user), console.error);
+      .subscribe((user: User)=>{
+        this.saveUserAndGo(user);
+      }, error=>this.displayError(error, true));
   }
 
   onLoginSubmit(form){
+    this.message= "validando...";
+    this.sending= true;
     this.userService
       .loginEmail(form)
       .subscribe( (response: ApiResponse )=>{
         if(response.success){
           this.saveUserAndGo(response.data);
         }else{
-          this.error= "Acceso no autorizado";
+          this.displayError();
         }
       });
   }
@@ -100,9 +109,9 @@ export class LoginComponent implements OnInit {
         if(response.success){
           this.saveUserAndGo(response.data);
         }else{
-          this.error= response.message;
+          this.displayError(response.message);
         }
-      });
+      }, error=>this.displayError(error, true));
   }
 
   setupRegisterForm(user: User){
@@ -116,9 +125,9 @@ export class LoginComponent implements OnInit {
         if(response.success){
           this.state=0;
         }else{
-          this.error= "no existe ninguna cuenta con ese identificador";
+          this.displayError("no existe ninguna cuenta con ese identificador");
         }
-      });
+      }, error=>this.displayError(error, true));
   }
 
   private saveUserAndGo(user: User){
@@ -133,8 +142,24 @@ export class LoginComponent implements OnInit {
         this.router.navigate(['calendario'], {queryParamsHandling: 'preserve', preserveFragment: true})
     }else{
       this.setupRegisterForm(this.userService.userFromFirebase);
+      this.sending= false;
       this.state= 2;
     }
+  }
+
+  private displayError(message="no autorizado", snack=false){
+    this.state=0; this.sending= false;
+    if(snack)
+      this.appService.snack(message);
+    else
+      this.message= message;
+    this.zone.run(() => { this.state=0; this.sending= false;
+      if(snack)
+        this.appService.snack(message);
+      else
+        this.message= message;
+      }
+    );
   }
 
 }

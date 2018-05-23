@@ -77,10 +77,9 @@
       (dragEnter)="day.dragOver = true"
       (dragLeave)="day.dragOver = false"
       (drop)="day.dragOver = false; eventDropped.emit({event: $event.dropData.event, newStart: day.date})">
-      <b fxHide fxShow.gt-xs>{{ day.date | calendarDate:'weekViewColumnHeader':locale }}</b><br>
-      <span fxHide fxShow.gt-xs>{{ day.date | calendarDate:'weekViewColumnSubHeader':locale }}</span>
+      <b [ngStyle.xs]="{'font-size.px':10}">{{ day.date | date:'d'}}</b><br>
+      <span fxHide fxShow.gt-xs>{{ day.date | date:'EEEE' }}</span>
       <b fxHide.gt-xs style="font-size: 10px">{{ day.date | date:'EEEEE':locale }}</b><br>
-      <b fxHide.gt-xs style="font-size: 10px">{{ day.date | date:'dd/MM':locale }}</b><br>
     </div>
   </div>
 </ng-template>
@@ -92,7 +91,7 @@
       'calendar-day-full': day.badgeTotal>=dayMaxEvents,
       'calendar-day-free': day.badgeTotal<dayMaxEvents }">
     <div class="cal-cell-top">
-      <span class="cal-day-number" style="font-size: 1.2em;">{{ day.date | calendarDate:'monthViewDayNumber':locale }}</span>
+      <span class="cal-day-number"  [ngStyle.xs]="{'font-size.px':10}" [ngStyle.gt-xs]="{'font-size.em':1.2}">{{ day.date | calendarDate:'monthViewDayNumber':locale }}</span>
       <span class="cal-day-badge" fxHide fxShow.gt-xs *ngIf="day.badgeTotal > 0">{{ day.badgeTotal }}</span>
     </div>
   </div>
