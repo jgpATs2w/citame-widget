@@ -1,0 +1,24 @@
+
+<mat-toolbar fxLayout class="app-window-topbar">
+  <button mat-icon-button type="button"  [routerLink]="['/calendario']" queryParamsHandling="preserve"><i class="material-icons">close</i></button>
+  <h1>Cita</h1>
+
+</mat-toolbar>
+<mat-list fxLayout="column wrap" fxLayoutGap="1em" class="app-list-height-auto">
+  <mat-list-item *ngIf="cita && !deleted">
+    Cita reservada para {{cita.paciente.nombre}} {{cita.paciente.apellidos}} el día {{cita.inicio | date:'longDate'}} de {{cita.inicio | date:'h:mm'}} a {{cita.fin | date:'h:mm'}}.
+  </mat-list-item>
+  <mat-list-item *ngIf="cita && !deleted">
+    <button mat-raised-button *ngIf="cita" color="warn" (click)="delete()" ><i class="material-icons">delete</i> ELIMINAR</button>
+  </mat-list-item>
+  <mat-list-item *ngIf="cita && deleted">
+    La cita se ha eliminado.
+  </mat-list-item>
+  <mat-list-item *ngIf="cita && deleted">
+    <button mat-raised-button *ngIf="cita" (click)="undo()" ><i class="material-icons">undo</i> DESHACER</button>
+  </mat-list-item>
+  <mat-list-item>
+    <a href="javascript:void()" [routerLink]="['/calendario']" queryParamsHandling="preserve">Reservar otra cita</a>
+  </mat-list-item>
+
+</mat-list>

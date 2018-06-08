@@ -33,12 +33,15 @@ mat-toolbar {
   background-color: #bdbdbd
 }
 
+
 .cal-event{
+  color: $dark !important;
   .app-event-title{
     font-weight: 700;
     font-size: 120%;
   }
   .app-event-buttons{
+    color: black !important;
     position: absolute;
     top: 0.1em;
     right: 0.1em;

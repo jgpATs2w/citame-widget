@@ -16,6 +16,12 @@ export interface Cita{
   duracion?: number;
   paciente?: User;
   terapeuta?: User;
+  autor_id?: number;
+  eliminador_id?: number;
+  modificador_id?: number
+  eliminada?: string;
+  creada?: string;
+  modificada?: string;
   googleUrl?: string;
 }
 

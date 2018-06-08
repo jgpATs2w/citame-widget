@@ -33,6 +33,7 @@ import { TopbarComponent } from './views/topbar/topbar.component';
 import { LoginComponent } from './views/login/login.component';
 import { CalendarioComponent } from './views/calendario/calendario.component';
 import { PacienteComponent } from './views/paciente/paciente.component';
+import { CitaComponent } from './views/cita/cita.component';
 import { ErrorComponent } from './views/error/error.component';
 import { EscapeHtmlPipe, EscapeUrlPipe } from './app.pipes';
 
@@ -44,6 +45,7 @@ registerLocaleData(localeEs);
     LoginComponent,
     CalendarioComponent,
     PacienteComponent,
+    CitaComponent,
     ErrorComponent,
     EscapeHtmlPipe, EscapeUrlPipe
   ],
