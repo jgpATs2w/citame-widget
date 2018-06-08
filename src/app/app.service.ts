@@ -1,8 +1,11 @@
+
+import {of as observableOf,  Observable } from 'rxjs';
+
+import {map} from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import { Http, Response, Headers, RequestOptions } from '@angular/http';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Observable } from 'rxjs';
-import 'rxjs/add/operator/map';
+
 
 import { MatSnackBar, MatSnackBarRef } from '@angular/material';
 
@@ -57,7 +60,7 @@ export class AppService {
     if(this.productoId)
       url += '&producto_id='+this.productoId;
 
-    return this.http.get( url ).map(res=>res.json());
+    return this.http.get( url ).pipe(map(res=>res.json()));
 
   }
 
@@ -75,8 +78,8 @@ export class AppService {
       body.producto_id= this.productoId;
 
     if(url.indexOf('?')<0) url+='?';
-    return this.http.post( environment.API_URL + url + '&key=' + this.key, body , options)
-                  .map(res=>res.json());
+    return this.http.post( environment.API_URL + url + '&key=' + this.key, body , options).pipe(
+                  map(res=>res.json()));
   }
 
   apiDelete(url:string): Observable<ApiResponse>{
@@ -86,8 +89,8 @@ export class AppService {
     let options = new RequestOptions({ 'headers': headers });
     return this
             .http
-            .delete( environment.API_URL +url+ '&clinica_id=' + this.clinicaId + '&key=' + this.key, options)
-            .map(res=>res.json());
+            .delete( environment.API_URL +url+ '&clinica_id=' + this.clinicaId + '&key=' + this.key, options).pipe(
+            map(res=>res.json()));
   }
 
   public snack( message: string, action: string='Ok', duration: number= 3000): Observable<void>{
@@ -96,6 +99,6 @@ export class AppService {
   }
 
   private mockSuccessResponse(): Observable<ApiResponse>{
-    return Observable.of({success: true});
+    return observableOf({success: true});
   }
 }

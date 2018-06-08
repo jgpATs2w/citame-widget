@@ -1,3 +1,7 @@
+
+import {combineLatest as observableCombineLatest,  Subject ,  Observable,Subscription } from 'rxjs';
+
+import {map, first} from 'rxjs/operators';
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -23,8 +27,6 @@ import {
   setMinutes,getMinutes,
   format
 } from 'date-fns';
-import { Subject } from 'rxjs/Subject';
-import { Observable,Subscription } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
 import { AppService } from '../../app.service';
@@ -126,7 +128,7 @@ export class CalendarioComponent implements OnInit, OnDestroy {
 
     ngOnInit(){
       window.scrollTo(0,0);
-      this.userService.currentUser$.first().subscribe(user=>{
+      this.userService.currentUser$.pipe(first()).subscribe(user=>{
         this.currentUser= user;
         this.isPaciente=( !user || user.rol=='paciente' );
       });
@@ -223,7 +225,7 @@ export class CalendarioComponent implements OnInit, OnDestroy {
       if(this.syncing) return;
 
       if(this.isValidDate(date)){
-        this.userService.currentUser$.first().subscribe(user=>{
+        this.userService.currentUser$.pipe(first()).subscribe(user=>{
           if(user){
             let cita= Object.assign({}, CITA_NEW);
             cita.paciente_id= +user.id;
@@ -300,8 +302,8 @@ export class CalendarioComponent implements OnInit, OnDestroy {
       });
     }
     get calendarEvents$(): Observable<any> {
-        return Observable.combineLatest(this.calendarioService.citas$,this.userService.currentUser$)
-                      .map(([citas, user]) => {
+        return observableCombineLatest(this.calendarioService.citas$,this.userService.currentUser$).pipe(
+                      map(([citas, user]) => {
                         return citas.map((cita: Cita) => {
                           cita.inicio= (''+cita.inicio).replace(/\s/g, "T");
                           cita.fin= (''+cita.fin).replace(/\s/g, "T");
@@ -343,7 +345,7 @@ export class CalendarioComponent implements OnInit, OnDestroy {
                           }
 
                         });
-                      });
+                      }));
       };
 
 }

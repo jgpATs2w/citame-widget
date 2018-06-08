@@ -1,5 +1,6 @@
+
+import {of as observableOf,  Observable } from 'rxjs';
 import { TestBed, inject } from '@angular/core/testing';
-import { Observable } from 'rxjs';
 
 import { NgRedux, DevToolsExtension } from '@angular-redux/store';
 import { NgReduxTestingModule, MockNgRedux } from '@angular-redux/store/testing';
@@ -10,13 +11,13 @@ import { CalendarioService } from './calendario.service';
 import { CalendarioActions } from './calendario.actions';
 class AppServiceMock{
   apiGet( url ){
-    return Observable.of({
+    return observableOf({
       success: true,
       data: []
     })
   }
   apiPost( url, body ){
-    return Observable.of({
+    return observableOf({
       success: true,
       data: null
     })

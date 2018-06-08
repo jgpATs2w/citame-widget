@@ -3,9 +3,9 @@ import {Location} from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { CalendarEvent } from 'calendar-utils';
 import { Observable, Subscription } from 'rxjs';
-import 'rxjs/add/operator/debounceTime';
-import 'rxjs/add/operator/switchMap';
-import 'rxjs/add/operator/first';
+
+
+
 import {FormControl} from '@angular/forms';
 import {
   FormBuilder,

@@ -1,3 +1,7 @@
+
+import {timer as observableTimer,  Observable, Subscription, Subject } from 'rxjs';
+
+import {delay, first, pluck, switchMap, map, filter, tap} from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import {
   CalendarEvent,
@@ -23,9 +27,8 @@ import {
 } from 'date-fns';
 
 import { Http, Response } from '@angular/http';
-import { Observable, Subscription, Subject } from 'rxjs';
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/debounceTime';
+
+
 
 import { NgRedux, select } from '@angular-redux/store';
 import { CalendarioActions } from './calendario.actions';
@@ -77,29 +80,29 @@ export class CalendarioService {
   ) {
 
     this.citas$= ngRedux
-                    .select<CalendarioState>('calendario')
-                    .map(state=>state.citas)
-                    .filter((citas:Cita[])=>typeof citas==="object");
+                    .select<CalendarioState>('calendario').pipe(
+                    map(state=>state.citas),
+                    filter((citas:Cita[])=>typeof citas==="object"),);
 
-    this.citasFromServer$ = appService.apiGet('/citas.json?').pluck('data');
+    this.citasFromServer$ = appService.apiGet('/citas.json?').pipe(pluck('data'));
   }
 
   setupRefresh(refresh){this.refreshCalendar=refresh;};
 
   citasFromServerForPaciente$(paciente_id):Observable<Cita[]>{
-    return this.appService.apiGet('/citas.json?paciente_id='+paciente_id).pluck('data');
+    return this.appService.apiGet('/citas.json?paciente_id='+paciente_id).pipe(pluck('data'));
   }
   readServer(date: Date, view: string, salaId: string='-1' ){
     const url= this.getCitasUrl(date, view, salaId);
-    this.appService.apiGet( url ).pluck('data').first().subscribe((citas:Cita[])=>this.actions.setCitas(citas));
+    this.appService.apiGet( url ).pipe(pluck('data'),first(),).subscribe((citas:Cita[])=>this.actions.setCitas(citas));
     this.readHorario();
   }
   startCitasLoop( date: Date, view: string, salaId: string ){
     if(this.citasSubscription!=null) return;
     const url= this.getCitasUrl(date, view, salaId);
-    this.citasSubscription= Observable.timer(500, 10000)
-              .switchMap(_=>this.appService.apiGet( url ).pluck('data'))
-              .delay(500)
+    this.citasSubscription= observableTimer(500, 10000).pipe(
+              switchMap(_=>this.appService.apiGet( url ).pipe(pluck('data'))),
+              delay(500),)
               .subscribe((citas:Cita[])=>this.actions.setCitas(citas));
   }
   stopCitasLoop(){
@@ -108,9 +111,9 @@ export class CalendarioService {
   }
 
   readHorario(){
-    this.appService.apiGet( '/clinicas/'+this.appService.clinicaId +'.json')
-      .pluck('data')
-      .first()
+    this.appService.apiGet( '/clinicas/'+this.appService.clinicaId +'.json').pipe(
+      pluck('data'),
+      first(),)
       .subscribe((clinica:any)=>{
         const h1= clinica.horario.split(',');
         this.horario[0]= h1[0].split('-');
@@ -147,35 +150,35 @@ export class CalendarioService {
   deleteCita(cita: Cita){
     const eliminador_id= this.appService.current_id;
     return this.appService
-                      .apiDelete(`/citas/${cita.id}?eliminador_id=${eliminador_id}`)
-                      .do(r=>{
+                      .apiDelete(`/citas/${cita.id}?eliminador_id=${eliminador_id}`).pipe(
+                      tap(r=>{
                         if(r.success)
                           this.actions.deleteCita(cita);
                         else
                           this.appService.snack(r.message);
-                      })
+                      }))
   }
 
   updateCita( cita: Cita ){
     return this.appService
-                      .apiPost("/citas/"+cita.id, cita)
-                      .do(r=>{
+                      .apiPost("/citas/"+cita.id, cita).pipe(
+                      tap(r=>{
                         if(r.success)
                           this.actions.updateCita(cita);
                         else
                           this.appService.snack(r.message);
-                      });
+                      }));
   }
 
   addCita( cita: Cita ){
     return this.appService
-                      .apiPost("/citas?recordatorio", cita)
-                      .do(r=>{
+                      .apiPost("/citas?recordatorio", cita).pipe(
+                      tap(r=>{
                         if(r.success)
                           this.actions.addCita(r.data);
                         else
                           this.appService.snack(r.message);
-                      });
+                      }));
   }
 
   setCurrentCita( cita: Cita ){

@@ -1,12 +1,13 @@
+
+import {of as observableOf,  Observable } from 'rxjs';
 import { TestBed, inject, fakeAsync, getTestBed, tick } from '@angular/core/testing';
-import { Observable } from 'rxjs';
 
 import { AngularFireModule } from 'angularfire2';
 import { AngularFireAuthModule, AngularFireAuth } from 'angularfire2/auth';
 
 import { NgRedux, DevToolsExtension } from '@angular-redux/store';
 import { NgReduxTestingModule, MockNgRedux } from '@angular-redux/store/testing';
-import 'rxjs/add/operator/do';
+
 
 import { UserActions } from '../app.actions';
 
@@ -21,13 +22,13 @@ import { UsersReducer, UsersState, INITIAL_USERS_STATE } from './users.reducer';
 class AngularFireAuthMock{}
 class AppServiceMock{
   apiGet( url ){
-    return Observable.of({
+    return observableOf({
       success: true,
       data: []
     })
   }
   apiPost( url, body ){
-    return Observable.of({
+    return observableOf({
       success: true,
       data: {}
     })

@@ -1,9 +1,9 @@
 import { Injectable, Inject } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
-import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/operator/do';
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/take';
+import { Observable } from 'rxjs';
+
+
+
 
 import { NgRedux, select } from '@angular-redux/store';
 import { AppService } from '../app.service';

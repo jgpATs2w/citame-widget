@@ -1,9 +1,12 @@
+
+import {of as observableOf,  Observable } from 'rxjs';
+
+import {map, tap} from 'rxjs/operators';
 import { Injectable, Inject } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
-import { Observable } from 'rxjs/Observable';
-import 'rxjs/add/operator/do';
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/take';
+
+
+
 
 import { NgRedux, select } from '@angular-redux/store';
 import { AppService } from '../app.service';
@@ -23,13 +26,13 @@ export class CalendarioGuard implements CanActivate {
       const queryParams= state.root.queryParams;
       if(!queryParams.key){
         this.router.navigate(['/error'], {queryParams: {error:this.appService.ERROR_NO_KEY}, queryParamsHandling: 'merge'});
-        return Observable.of(false);
+        return observableOf(false);
       }
 
       this.appService.readQuery(queryParams);
 
-      return this.userService.currentUser$
-              .do(u=>{if(u) this.appService.setCurrentId(u.id)})
-              .map(_=>true);
+      return this.userService.currentUser$.pipe(
+              tap(u=>{if(u) this.appService.setCurrentId(u.id)}),
+              map(_=>true),);
   }
 }

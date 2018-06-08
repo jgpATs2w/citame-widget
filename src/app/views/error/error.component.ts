@@ -1,3 +1,5 @@
+
+import {first} from 'rxjs/operators';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
@@ -17,7 +19,7 @@ export class ErrorComponent implements OnInit {
     appService: AppService
   ) {
     this.appService= appService;
-    route.queryParams.first().subscribe(params=>this.error= params.error? params.error: 0);
+    route.queryParams.pipe(first()).subscribe(params=>this.error= params.error? params.error: 0);
   }
 
   ngOnInit() {}

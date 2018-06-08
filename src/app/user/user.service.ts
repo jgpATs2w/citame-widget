@@ -1,14 +1,17 @@
+
+import {from as observableFrom, timer as observableTimer, of as observableOf,  Observable, Subscription } from 'rxjs';
+
+import {tap, switchMap, pluck, mergeMap, map} from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 
 import { AngularFireAuth } from 'angularfire2/auth';
 import * as firebase from 'firebase/app';
-import { Observable, Subscription } from 'rxjs';
-import 'rxjs/add/operator/pluck';
-import 'rxjs/add/operator/filter';
-import 'rxjs/add/operator/concatMap';
-import 'rxjs/add/operator/concat';
-import 'rxjs/add/operator/mergeMap';
-import 'rxjs/add/operator/defaultIfEmpty';
+
+
+
+
+
+
 
 import { NgRedux, select, ObservableStore } from '@angular-redux/store';
 import { UserActions } from '../app.actions';
@@ -28,7 +31,7 @@ export const emailPattern= /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*
 export class UserService {
   usersStore$: Observable<UsersState>;
   currentUser$: Observable<User>;
-  pacientesFromServer$: Observable<User[]>= Observable.of([]);
+  pacientesFromServer$: Observable<User[]>= observableOf([]);
   pacientes$: Observable<User[]>;
   terapeutas$: Observable<User[]>;
   userFromFirebase: User;
@@ -43,18 +46,18 @@ export class UserService {
     private appService: AppService
   ) {
     this.usersStore$= ngRedux.select('users');
-    this.currentUser$= this.usersStore$.pluck('currentUser');
+    this.currentUser$= this.usersStore$.pipe(pluck('currentUser'));
 
-    this.pacientes$= this.usersStore$.pluck('usuarios').map((users:User[])=>users.filter((user:User)=>user.rol=="paciente"));
-    this.terapeutas$= this.usersStore$.pluck('usuarios').map((users:User[])=>users.filter((user:User)=>user.rol=="terapeuta"));
-    this.pacientesFromServer$= this.appService.apiGet("/usuarios.json?rol=paciente").pluck('data');
+    this.pacientes$= this.usersStore$.pipe(pluck('usuarios'),map((users:User[])=>users.filter((user:User)=>user.rol=="paciente")),);
+    this.terapeutas$= this.usersStore$.pipe(pluck('usuarios'),map((users:User[])=>users.filter((user:User)=>user.rol=="terapeuta")),);
+    this.pacientesFromServer$= this.appService.apiGet("/usuarios.json?rol=paciente").pipe(pluck('data'));
   }
 
   startPacientesLoop(){
     if(this.pacientesSubscription!=null) return;
-    this.pacientesSubscription= Observable.timer(100, 10000)
-              .switchMap(_=>this.appService.apiGet("/usuarios.json?rol=paciente"))
-              .pluck('data')
+    this.pacientesSubscription= observableTimer(100, 10000).pipe(
+              switchMap(_=>this.appService.apiGet("/usuarios.json?rol=paciente")),
+              pluck('data'),)
               .subscribe((pacientes:User[])=>this.actions.addUsuarios(pacientes));
   }
   stopPacientesLoop(){
@@ -62,9 +65,9 @@ export class UserService {
   }
   startTerapeutasLoop(){
     if(this.terapeutasSubscription!=null) return;
-    this.terapeutasSubscription= Observable.timer(100, 10000)
-              .switchMap(_=>this.appService.apiGet("/usuarios.json?rol=terapeuta"))
-              .pluck('data')
+    this.terapeutasSubscription= observableTimer(100, 10000).pipe(
+              switchMap(_=>this.appService.apiGet("/usuarios.json?rol=terapeuta")),
+              pluck('data'),)
               .subscribe((terapeutas:User[])=>this.actions.addUsuarios(terapeutas));
   }
 
@@ -92,59 +95,58 @@ export class UserService {
 
   loginWithFirebase$( providerKey: string ): Observable<User>{
     const provider= new firebase.auth[providerKey+'AuthProvider']();
-    const user$= Observable
-                    .fromPromise(this.afAuth.auth.signInWithPopup(provider))
-                    .pluck('user')
-                    .map(fromFirebase);
+    const user$= observableFrom(this.afAuth.auth.signInWithPopup(provider)).pipe(
+                    pluck('user'),
+                    map(fromFirebase),);
     return this.processUserFromFirebase$(user$);
   }
 
   processUserFromFirebase$( user$: Observable<User>): Observable<User>{
-    return user$
-              .map((user:User)=>({...user, id: user.email, password: 'firebase'}))
-              .do(user=>this.userFromFirebase=user)
-              .mergeMap((user:User)=>this.loginEmail(user).map(apiResponse=>apiResponse.data))
+    return user$.pipe(
+              map((user:User)=>({...user, id: user.email, password: 'firebase'})),
+              tap(user=>this.userFromFirebase=user),
+              mergeMap((user:User)=>this.loginEmail(user).pipe(map(apiResponse=>apiResponse.data))),)
   }
   createUser(user: User): Observable<ApiResponse>{
     return this.appService.apiPost("/usuarios", user);
   }
   logout(){
     this.ngRedux.dispatch({type:'RESET'});
-    return Observable.fromPromise(this.afAuth.auth.signOut());
+    return observableFrom(this.afAuth.auth.signOut());
   }
   sendReminder(email:string): Observable<ApiResponse>{
-    return Observable.of({success: true});
+    return observableOf({success: true});
   }
   addUser(user:User){
 
     return this.appService
-                    .apiPost("/usuarios", user)
-                    .do(r=>{
+                    .apiPost("/usuarios", user).pipe(
+                    tap(r=>{
                       if(r.success)
                         this.actions.addUser(user);
                       else
                         this.appService.snack(r.message);
-                    });
+                    }));
   }
   updateUser(user:User){
     return this.appService
-                    .apiPost("/usuarios/"+user.id, user)
-                    .do(r=>{
+                    .apiPost("/usuarios/"+user.id, user).pipe(
+                    tap(r=>{
                       if(r.success)
                         this.actions.updateUsuario(user);
                       else
                         this.appService.snack(r.message);
-                    });
+                    }));
   }
   deleteUser(user:User){
 
     return this.appService
-                  .apiDelete("/usuarios/"+user.id)
-                  .do(r=>{
+                  .apiDelete("/usuarios/"+user.id).pipe(
+                  tap(r=>{
                     if(r.success)
                       this.actions.deleteUsuario(user);
                     else
                       this.appService.snack(r.message);
-                  });
+                  }));
   }
 }
