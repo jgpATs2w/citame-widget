@@ -210,11 +210,12 @@ export class CalendarioComponent implements OnInit, OnDestroy {
         event.meta.inicio= this.calendarioService.formatDateTime(event.start);
         event.meta.fin= this.calendarioService.formatDateTime(event.end);
 
-        this.calendarioService.updateCita( event.meta ).subscribe(r=>{
+        this.calendarioService.updateCita( event.meta ).subscribe(r=>{console.info(r);
           if(!r.success){
             this.calendarioService.actions.updateCita(previousCita);
             this.refresh.next();
-          }
+          }else
+            this.refresh.next();
 
         });
         this.refresh.next();

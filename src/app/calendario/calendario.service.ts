@@ -164,7 +164,7 @@ export class CalendarioService {
                       .apiPost("/citas/"+cita.id, cita).pipe(
                       tap(r=>{
                         if(r.success)
-                          this.actions.updateCita(cita);
+                          console.info('updated');//this.actions.updateCita(cita);
                         else
                           this.appService.snack(r.message);
                       }));
