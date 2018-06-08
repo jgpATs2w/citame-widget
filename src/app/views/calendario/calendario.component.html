@@ -132,7 +132,7 @@
           <span class="toolbar-date-title">{{ viewDate | date:'MMMM y' }}</span>
           <span class="spacer"></span>
           <mat-form-field class="select-view">
-            <mat-select [(value)]="view" (change)="selectView(view)">
+            <mat-select [(ngModel)]="view" (ngModelChange)="selectView(view)">
               <mat-option value="month">Mes</mat-option>
               <mat-option value="week">Semana</mat-option>
               <mat-option value="day">Día</mat-option>

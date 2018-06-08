@@ -36,6 +36,7 @@ import { Cita, CITA_NEW } from '../../cita/cita.model';
 import { UserService } from '../../user/user.service';
 import { User } from '../../user/user.model';
 
+
 @Component({
   selector: 'app-calendario',
   templateUrl: './calendario.component.html',
@@ -58,7 +59,8 @@ export class CalendarioComponent implements OnInit, OnDestroy {
 
     activeDayIsOpen: boolean = true;
 
-    excludeDays: number[] = [];//0,6
+    excludeDays: number[] = [0,6];
+    showWeekends: boolean= false;
     dayEndHour: number= 20;
     dayMaxEvents:number= 8;
 
@@ -87,21 +89,21 @@ export class CalendarioComponent implements OnInit, OnDestroy {
       this.routeParamsSubscription= route.params.subscribe(params=>{
         if(params['view'])
           this.view= params['view'];
-          if(params['date']){
-            const pieces= params['date'].split('-');
-            const year= pieces[0];
+        if(params['date']){
+          const pieces= params['date'].split('-');
+          const year= pieces[0];
 
-            if(this.view=='week'){
-              let d= new Date(year, 0);
-              if(pieces.length>1)
-                d= addWeeks(d, pieces[1]-1);
-              this.viewDate= d;
-            }else{
-              const month= pieces[1]? +pieces[1]-1:0;
-              const day= pieces[2]? pieces[2]:1;
-              this.viewDate= new Date(year, month, day);
-            }
+          if(this.view=='week'){
+            let d= new Date(year, 0);
+            if(pieces.length>1)
+              d= addWeeks(d, pieces[1]-1);
+            this.viewDate= d;
+          }else{
+            const month= pieces[1]? +pieces[1]-1:0;
+            const day= pieces[2]? pieces[2]:1;
+            this.viewDate= new Date(year, month, day);
           }
+        }
 
         this.updateState();
         this.calendarioService.setupRefresh(this.refresh);
@@ -142,6 +144,8 @@ export class CalendarioComponent implements OnInit, OnDestroy {
     }
     updateState(){
       this.calendarioService.readServer(this.viewDate, this.view, this.salaId);
+      this.excludeDays= this.calendarioService.fines_de_semana? []: [0,6];
+      this.refresh.next();
     }
     selectView(view:string){
       const viewOptions= this.calendarioService.viewOptions;

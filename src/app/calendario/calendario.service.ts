@@ -28,8 +28,6 @@ import {
 
 import { Http, Response } from '@angular/http';
 
-
-
 import { NgRedux, select } from '@angular-redux/store';
 import { CalendarioActions } from './calendario.actions';
 import { AppState, CalendarioState } from '../app.store';
@@ -71,6 +69,7 @@ export class CalendarioService {
   currentUser: User;
   horario:any= [[9,14], [16,20]];
   refreshCalendar: Subject<any> = new Subject();
+  fines_de_semana:boolean= false;
 
   constructor(
     private ngRedux: NgRedux<AppState>,
@@ -95,7 +94,7 @@ export class CalendarioService {
   readServer(date: Date, view: string, salaId: string='-1' ){
     const url= this.getCitasUrl(date, view, salaId);
     this.appService.apiGet( url ).pipe(pluck('data'),first(),).subscribe((citas:Cita[])=>this.actions.setCitas(citas));
-    this.readHorario();
+    return this.readHorario();
   }
   startCitasLoop( date: Date, view: string, salaId: string ){
     if(this.citasSubscription!=null) return;
@@ -118,6 +117,7 @@ export class CalendarioService {
         const h1= clinica.horario.split(',');
         this.horario[0]= h1[0].split('-');
         this.horario[1]= h1[1].split('-');
+        this.fines_de_semana= clinica.fines_de_semana;
       });
   }
   checkHorario(date: Date): boolean{

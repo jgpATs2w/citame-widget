@@ -4,7 +4,7 @@ import { NgReduxModule, NgRedux, DevToolsExtension }  from '@angular-redux/store
 import { applyMiddleware } from 'redux'
 import * as persistState from 'redux-localstorage';
 import { createLogger } from 'redux-logger';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { HttpModule } from '@angular/http';
 import { registerLocaleData } from '@angular/common';
@@ -53,7 +53,7 @@ registerLocaleData(localeEs);
     AppMaterialModule,
     routes,
     FlexLayoutModule,
-    ReactiveFormsModule,
+    ReactiveFormsModule, FormsModule,
     CalendarModule.forRoot(),
     AngularFireModule.initializeApp(environment.firebase, 'citame'),
     AngularFireAuthModule,
