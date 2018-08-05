@@ -22,6 +22,7 @@ export class AppService {
   public clinicaId: string = '1';
   salaId: string;
   productoId: string;
+  terapeutaId: number;
   current_id: string;
   key: string;
 
@@ -45,8 +46,13 @@ export class AppService {
 
       if(params.sala_id)
         this.salaId= params.sala_id;
-      if(params.producto_id)
+
+      if(params.producto_id || params.producto )
         this.productoId= params.producto_id;
+
+      if(params.terapeuta_id || params.terapeuta )
+        this.terapeutaId= +params.terapeuta_id || +params.terapeuta ;
+
       if(params.key){
         this.key= params.key;
       }
@@ -76,6 +82,8 @@ export class AppService {
       body.sala_id= this.salaId;
     if(this.productoId)
       body.producto_id= this.productoId;
+    if(this.terapeutaId)
+      body.terapeuta_id= this.terapeutaId;
 
     if(url.indexOf('?')<0) url+='?';
     return this.http.post( environment.API_URL + url + '&key=' + this.key, body , options).pipe(
