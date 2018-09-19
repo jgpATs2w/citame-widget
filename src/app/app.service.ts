@@ -41,8 +41,7 @@ export class AppService {
     this.current_id=id;
   }
   readQuery(params){
-      if(params.clinica_id)
-        this.clinicaId= params.clinica_id;
+      this.clinicaId= params.clinica_id? params.clinica_id : '1';
 
       if(params.sala_id)
         this.salaId= params.sala_id;

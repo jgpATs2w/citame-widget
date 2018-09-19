@@ -29,10 +29,6 @@ export class AuthGuard implements CanActivate {
         this.router.navigate(['/error'], {queryParams: {error:this.appService.ERROR_NO_KEY}, queryParamsHandling: 'merge'});
         return false;
       }
-      if(!queryParams.clinica_id){
-        this.router.navigate(['/error'], {queryParams: {error:this.appService.ERROR_NO_CLINICA}, queryParamsHandling: 'merge'});
-        return false;
-      }
 
       this.appService.readQuery(queryParams);
 
