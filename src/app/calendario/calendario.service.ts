@@ -116,7 +116,8 @@ export class CalendarioService {
       .subscribe((clinica:any)=>{
         const h1= clinica.horario.split(',');
         this.horario[0]= h1[0].split('-');
-        this.horario[1]= h1[1].split('-');
+        if(!!h1[1])
+          this.horario[1]= h1[1].split('-');
         this.fines_de_semana= clinica.fines_de_semana;
       });
   }

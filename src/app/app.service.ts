@@ -41,13 +41,17 @@ export class AppService {
     this.current_id=id;
   }
   readQuery(params){
-      this.clinicaId= params.clinica_id? params.clinica_id : '1';
 
-      if(params.sala_id)
-        this.salaId= params.sala_id;
+      if(params.clinica_id || params.clinica ){
+        this.clinicaId= params.clinica_id || params.clinica;
+      }else
+        this.clinicaId= '1';
+
+      if(params.sala_id || params.sala )
+        this.salaId= params.sala_id || params.sala;
 
       if(params.producto_id || params.producto )
-        this.productoId= params.producto_id;
+        this.productoId= params.producto_id || params.producto ;
 
       if(params.terapeuta_id || params.terapeuta )
         this.terapeutaId= +params.terapeuta_id || +params.terapeuta ;
