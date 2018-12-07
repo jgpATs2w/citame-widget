@@ -7,12 +7,6 @@ import { Injectable } from '@angular/core';
 import { AngularFireAuth } from 'angularfire2/auth';
 import * as firebase from 'firebase/app';
 
-
-
-
-
-
-
 import { NgRedux, select, ObservableStore } from '@angular-redux/store';
 import { UserActions } from '../app.actions';
 import { AppState, UsersState, UsersReducer } from '../app.store';
@@ -75,9 +69,12 @@ export class UserService {
     this.terapeutasSubscription.unsubscribe();
   }
 
-  loginGooglePromise(): Promise<User>{
-    return this.afAuth.auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
-  }
+  /*loginGooglePromise(): Promise<User>{
+    return  observableOf(this.afAuth.auth
+        .signInWithPopup(new firebase.auth.GoogleAuthProvider()))
+        ;
+
+  }*/
   loginGoogle(): Observable<User>{
     return this.loginWithFirebase$('Google');
   }

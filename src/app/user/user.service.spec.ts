@@ -58,12 +58,4 @@ describe('UserService', () => {
     }));
   });
 
-  describe('Firebase user register', () => {
-    it('should create users if dont exists', inject([UserService], (userService: UserService)=>{
-      userService.loginWithFirebase$('Google').subscribe(user=>{
-        console.info(user);
-        expect(user.nombre).toEqual('Pepito');
-      })
-    }));
-  });
 });

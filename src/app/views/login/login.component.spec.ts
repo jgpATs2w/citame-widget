@@ -12,16 +12,6 @@ import {
 import { By } from '@angular/platform-browser';
 
 import { AppMaterialModule } from '../../app.material.module';
-import {
-  advance,
-  createRoot,
-  RootCmp,
-  configureTests
-} from '../../test/test.module';
-import {
-  dispatchEvent,
-  ConsoleSpy
-} from '../../test/utils';
 
 import { NgReduxTestingModule, MockNgRedux } from '@angular-redux/store/testing';
 import { UserActions } from '../../app.actions';
@@ -29,7 +19,6 @@ import { AppState} from '../../app.store';
 
 import { AppService } from '../../app.service';
 import { UserService } from '../../user/user.service';
-import { UserServiceMock } from '../../user/user.service.mock';
 import { LoginComponent } from './login.component';
 
 class AppServiceMock{}
@@ -60,7 +49,7 @@ xdescribe('LoginComponent', () => {
       providers:[
         UserActions,
         {provide: AppService, useClass: AppServiceMock},
-        {provide: UserService, useClass: UserServiceMock}
+        UserService
       ]
     })
     .compileComponents();
@@ -101,7 +90,7 @@ xdescribe('LoginComponent', () => {
   }));
 
 
-  it('should login with email', fakeAsync(() => {
+  xit('should login with email', fakeAsync(() => {
     const emailButton= fixture.debugElement.query(By.css('button.login-email'));
     emailButton.triggerEventHandler('click', null);
 
@@ -115,8 +104,8 @@ xdescribe('LoginComponent', () => {
     emailInput.value= "pepito@gmail.com";
     passwordInput.value= "123456789";
 
-    dispatchEvent(emailInput, 'input');
-    dispatchEvent(passwordInput, 'input');
+    //dispatchEvent(emailInput, 'input');
+    //dispatchEvent(passwordInput, 'input');
 
 
     const loginButton= fixture.debugElement.query(By.css('.login-submit'));

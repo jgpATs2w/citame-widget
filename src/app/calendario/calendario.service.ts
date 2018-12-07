@@ -194,26 +194,27 @@ export class CalendarioService {
         previousFn: subMonths,
         todayFn: _=>{new Date()},
         nextFn: addMonths,
-        format: 'YYYY-M'
+        format: 'YYYY-MM'
       },
       week: {
         previousFn: subWeeks,
         todayFn: _=>{new Date()},
-        nextFn: addWeeks,
-        format: 'YYYY-W'
+        nextFn: (date, n)=>addDays(date, 8),
+        format: 'YYYY-WW'
       },
       day: {
         previousFn: subDays,
         todayFn: _=>{new Date()},
         nextFn: addDays,
-        format: 'YYYY-M-D'
+        format: 'YYYY-MM-DD'
       }
     }
   }
 
   public formatDate(date: Date, view: string, previousOrNext: string= null){
-    if(previousOrNext)
+    if(!!previousOrNext)
       date= this.viewOptions[view][previousOrNext+'Fn'](date,1);
+
     return format(date, this.viewOptions[view].format )
   }
   public formatDateTime(date: Date){
