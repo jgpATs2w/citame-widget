@@ -1,7 +1,7 @@
 export const environment = {
   production: false,
   reduxDevTools: true,
-  API_URL: 'https://api.citame.click/v1',//'http://localhost/citame-api',
+  API_URL: 'https://api.citame.click/v2',//'http://localhost/citame-api',
   firebase: {
     apiKey: "AIzaSyARlCCs4vlQtPyDM8ZbBzAJQqDvFq4zs6w",
     authDomain: "booking-f87b3.firebaseapp.com",

@@ -151,7 +151,7 @@ export class CalendarioService {
   deleteCita(cita: Cita){
     const eliminador_id= this.appService.current_id;
     return this.appService
-                      .apiDelete(`/citas/${cita.id}?eliminador_id=${eliminador_id}`).pipe(
+                      .apiDelete(`/citas/${cita.id}?eliminador_id=${eliminador_id}&aviso`).pipe(
                       tap(r=>{
                         if(r.success)
                           this.actions.deleteCita(cita);
