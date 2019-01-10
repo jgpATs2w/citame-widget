@@ -1,7 +1,5 @@
 import {User} from '../user/user.model';
 
-import {setMinutes, addMinutes} from 'date-fns';
-
 export interface Cita{
   id: string | number;
   paciente_id: number;
@@ -25,13 +23,12 @@ export interface Cita{
   googleUrl?: string;
 }
 
-const inicio= setMinutes(new Date(), 0);
 export const CITA_NEW:Cita={
   id: null,
   paciente_id: null,
   terapeuta_id: null,
-  inicio: inicio,
-  fin: addMinutes(inicio, 90),
+  inicio: null,
+  fin: null,
   paciente:{
     id: null,
     clinica_id: null,
@@ -41,5 +38,3 @@ export const CITA_NEW:Cita={
     tfno: null
   }
 }
-
-//TODO adapter from server

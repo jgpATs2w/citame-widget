@@ -1,30 +1,21 @@
 
 import {combineLatest as observableCombineLatest,  Subject ,  Observable,Subscription } from 'rxjs';
 
-import {map, first} from 'rxjs/operators';
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
-import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material';
+import {map, first, pluck } from 'rxjs/operators';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import {
   CalendarEvent,
-  CalendarEventAction,
   CalendarEventTimesChangedEvent,
   CalendarDateFormatter
 } from 'angular-calendar';
 import {
-  startOfDay,
-  endOfDay,
   addDays,
-  endOfMonth,
   isSameDay,
   isSameMonth,isPast,
-  addHours,
-  subHours,
-  subDays, subMonths, subWeeks,
+  subDays,
   addMinutes,
   addWeeks,
-  addMonths,
-  setMinutes,getMinutes,
   format
 } from 'date-fns';
 
@@ -35,7 +26,7 @@ import { CalendarioService } from '../../calendario/calendario.service';
 import { Cita, CITA_NEW } from '../../cita/cita.model';
 import { UserService } from '../../user/user.service';
 import { User } from '../../user/user.model';
-
+import { Producto } from '../../producto/producto.model';
 
 @Component({
   selector: 'app-calendario',
@@ -68,6 +59,8 @@ export class CalendarioComponent implements OnInit, OnDestroy {
 
     colors: any;
     salaId: string='1';
+    productoId: string;
+    terapeutaId: string;
     isPaciente: boolean= true;
     currentUser: User=null;
     routeParamsSubscription: Subscription;
@@ -112,6 +105,11 @@ export class CalendarioComponent implements OnInit, OnDestroy {
       this.routeQueryParamsSubscription= route.queryParams.subscribe(params=>{
         if(params['sala'])
           this.salaId= params['sala'];
+        if(params['producto_id']){
+          this.productoId= params['producto_id'];
+        }
+        if(params['terapeuta_id'])
+          this.terapeutaId= params['terapeuta_id'];
         this.updateState();
       });
     }
@@ -134,6 +132,7 @@ export class CalendarioComponent implements OnInit, OnDestroy {
         this.currentUser= user;
         this.isPaciente=( !user || user.rol=='paciente' );
       });
+
     }
     ngOnDestroy(){
       this.calendarioService.stopCitasLoop();
@@ -234,8 +233,11 @@ export class CalendarioComponent implements OnInit, OnDestroy {
           if(user){
             let cita= Object.assign({}, CITA_NEW);
             cita.paciente_id= +user.id;
+            cita.producto_id= +this.productoId;
+            cita.terapeuta_id= +this.terapeutaId;
+
             cita.inicio= this.calendarioService.formatDateTime(date);
-            cita.fin= this.calendarioService.formatDateTime(addMinutes(date, 60));
+            //cita.fin= this.calendarioService.formatDateTime(addMinutes(date, 60));
             this.syncing= true;
             this.calendarioService.addCita(cita).subscribe(r=>{
               this.syncing= false;
