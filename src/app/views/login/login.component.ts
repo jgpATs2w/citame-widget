@@ -1,4 +1,4 @@
-import { Component, OnInit, HostBinding, Inject, NgZone } from '@angular/core';
+import { Component, OnInit, NgZone } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -10,9 +10,6 @@ import {
   Router
 } from '@angular/router';
 import {Location} from '@angular/common';
-import { Observable } from "rxjs/Rx";
-
-import { environment } from '../../../environments/environment';
 
 import { AppService } from '../../app.service';
 import {
@@ -21,6 +18,8 @@ import {
 
 import { User } from '../../user/user.model';
 import { ApiResponse } from '../../api/apiresponse.model';
+import {AppRouter} from '../../app.router';
+import {AppState} from '../../app.state';
 
 
 function idValidator(control: FormControl): { [s: string]: boolean } {
@@ -39,11 +38,13 @@ export class LoginComponent implements OnInit {
   loginForm: FormGroup;
   registerForm: FormGroup;
   message: string;
-  state: number=0;
-  sending: boolean= false;
+  state = 0;
+  sending = false;
+  disableLogin = false;
 
   constructor(
-    private router: Router, private route: ActivatedRoute,
+    private appRouter: AppRouter,
+    private appState: AppState,
     private location: Location,
     private zone: NgZone,
     private fb: FormBuilder,
@@ -66,98 +67,141 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit() {
-    window.scrollTo(0,0);
+    window.scrollTo(0, 0);
+    const params = this.appRouter.getQueryParams();
+      if (!!params.key) {
+          this.appState.key = params.key;
+      } else {
+          if (!this.appState.key) {
+              this.appService.snack('Falta la llave en la url. Contacte con el administrador');
+              this.disableLogin = true;
+          }
+      }
   }
 
-  loginFacebook() {
-    this.message= "validando...";
-    this.sending= true;
-    this.userService.loginFacebook()
-    .subscribe((user: User)=>{
-      this.saveUserAndGo(user);
-    }, error=>this.displayError(error, true));
-  }
+    loginFacebook() {
+        this.message = 'validando...';
+        this.sending = true;
+        this.userService.loginFacebook()
+            .subscribe(response => {
+                this.parseApiResponse(response);
+            }, error => this.displayError(error, true));
+    }
 
-  loginGoogle() {
-    this.message= "validando...";
-    this.sending= true;
-    this.userService
-      .loginGoogle()
-      .subscribe((user: User)=>{
-        this.saveUserAndGo(user);
-      }, error=>this.displayError(error, true));
-  }
+    loginGoogle() {
+        this.message = 'validando...';
+        this.sending = true;
+        this.userService
+            .loginGoogle()
+            .subscribe(response => {
+                this.parseApiResponse(response);
+            }, error => this.displayError(error, true));
+    }
 
-  onLoginSubmit(form){
-    this.message= "validando...";
-    this.sending= true;
-    this.userService
-      .loginEmail(form)
-      .subscribe( (response: ApiResponse )=>{
-        if(response.success){
-          this.saveUserAndGo(response.data);
-        }else{
-          this.displayError();
+    onLoginSubmit(form) {
+        this.message = 'validando...';
+        this.sending = true;
+
+        this.userService
+            .loginEmail(form)
+            .subscribe( (response: ApiResponse ) => {
+                this.message = 'válido';
+                if (response.success) {
+                    this.parseApiResponse(response);
+                } else {
+                    this.displayError();
+                }
+            });
+    }
+
+    onRegisterSubmit() {
+        if (this.disableLogin) {
+            this.appService.snack('Falta la llave en la url. Contacte con el administrador');
+            return;
         }
-      });
-  }
+        this.sending = true;
+        const form = this.registerForm;
+        this.userService
+            .createUser(form.value)
+            .subscribe( (response: ApiResponse ) => {
+                this.sending = false;
+                if (response.success) {
+                    this.parseApiResponse(response);
+                } else {
+                    this.displayError(response.message);
+                }
+            }, error => this.displayError(error, true));
+    }
 
-  onRegisterSubmit(form){
-    this.userService
-      .createUser(form)
-      .subscribe( (response: ApiResponse )=>{
-        if(response.success){
-          this.saveUserAndGo(response.data);
-        }else{
-          this.displayError(response.message);
-        }
-      }, error=>this.displayError(error, true));
-  }
-
-  setupRegisterForm(user: User){
-    this.registerForm.patchValue(user);
-  }
-
-  remindPassword(){
+  remindPassword() {
     this.userService
       .sendReminder(this.loginForm.controls['id'].value)
-      .subscribe( response =>{
-        if(response.success){
-          this.state=0;
-        }else{
-          this.displayError("no existe ninguna cuenta con ese identificador");
+      .subscribe( response => {
+        if (response.success) {
+          this.state = 0;
+        } else {
+          this.displayError('no existe ninguna cuenta con ese identificador');
         }
-      }, error=>this.displayError(error, true));
+      }, error => this.displayError(error, true));
   }
-
-  private saveUserAndGo(user: User){
-    if(user){
+/*
+  private saveUserAndGo(user: User) {
+    if (user) {
       this.userService.actions.setCurrentUser(user);
-      if(this.route.snapshot.queryParams.from){
-        const from= this.route.snapshot.queryParams.from;
-        let queryParams= this.route.snapshot.queryParams;
+      if (this.route.snapshot.queryParams.from) {
+        const from = this.route.snapshot.queryParams.from;
+        const queryParams = this.route.snapshot.queryParams;
 
         this.router.navigate([from], {queryParams: {...queryParams, from: undefined}});
-      }else
-        this.router.navigate(['calendario'], {queryParamsHandling: 'preserve', preserveFragment: true})
-    }else{
+      } else {
+        this.router.navigate(['calendario'], {queryParamsHandling: 'preserve', preserveFragment: true});
+      }
+    } else {
       this.setupRegisterForm(this.userService.userFromFirebase);
-      this.sending= false;
-      this.state= 2;
+      this.sending = false;
+      this.state = 2;
     }
-  }
+  }*/
+    private parseApiResponse(response: ApiResponse) {
+        const user = response.data;
+        this.appState.authToken = response.authToken;
 
-  private displayError(message="no autorizado", snack=false){
-    this.state=0; this.sending= false;
-    if(snack)
+        if (user) {
+            if (user.key) {
+                this.end(user);
+                return;
+            } else if (user.keys) {
+                this.zone.run(() => { this.state = 2; this.sending = false; });
+                this.state = 2;
+                this.sending = false;
+                return;
+            }
+        }
+
+        this.state = 0;
+        this.message = 'no autorizado';
+        // this.zone.run(() => { this.state = 0; this.sending = false; this.message = 'no autorizado'; });
+        this.sending = false;
+    }
+    private end(user: User){
+        this.appState.user = user;
+        this.appState.key = user.key;
+        this.sending = false;
+        this.zone.run(() => { this.appRouter.navigateCalendario(); });
+    }
+  private displayError(message= 'no autorizado', snack= false) {
+    this.state = 0; this.sending = false;
+    if (snack) {
       this.appService.snack(message);
-    else
-      this.message= message;
-    this.zone.run(() => { this.state=0; this.sending= false;
-      if(snack)
+    } else {
+      this.message = message;
+    }
+    this.zone.run(() => { this.state = 0; this.sending = false;
+      if (snack) {
         this.appService.snack(message);
-      else
-        this.message= message;
+      } else {
+        this.message = message;
+      }
       }
     );
   }

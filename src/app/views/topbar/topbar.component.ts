@@ -1,12 +1,8 @@
-import { Component, OnInit, Inject  } from '@angular/core';
-import {
-  ActivatedRoute,
-  Router
-} from '@angular/router';
-import { Observable } from "rxjs/Rx";
+import { Component, OnInit  } from '@angular/core';
 
 import { User } from '../../user/user.model';
-import { UserService } from '../../user/user.service';
+import {AppRouter} from '../../app.router';
+import {AppState} from '../../app.state';
 
 @Component({
   selector: 'app-topbar',
@@ -14,28 +10,21 @@ import { UserService } from '../../user/user.service';
   styleUrls: ['./topbar.component.scss']
 })
 export class TopbarComponent implements OnInit {
-  user$: Observable<User>;
+  user: User;
   clinica: string;
 
   constructor(
-    private router: Router,
-    private route: ActivatedRoute,
-    private userService: UserService
-  ) {
-    this.user$= this.userService.currentUser$;
-  }
+    private appRouter: AppRouter,
+    private appState: AppState
+  ) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    window.scrollTo(0, 0);
+    this.user = this.appState.user;
+  }
 
   logout(){
-    this.userService
-        .logout()
-        .subscribe(()=>{
-          this.router.navigate(['/calendario'], {queryParamsHandling:'preserve'});
-          this.userService.actions.setCurrentUser(null);
-        });
-  }
-  clinicaChanged(clinica_id:string){
-    this.router.navigate(['.'], { relativeTo: this.route, queryParams: { clinica_id: clinica_id }, queryParamsHandling: 'merge', preserveFragment: true });
+    this.appState.reset();
+    this.appRouter.navigateCalendario();
   }
 }

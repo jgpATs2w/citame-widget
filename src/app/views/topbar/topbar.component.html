@@ -4,9 +4,6 @@
   <h1 fxHide fxShow.gt-sm class="app-name">Cítame.click</h1>
 
   <span class="spacer"></span>
-  <div *ngIf="user$ | async as user">
-    <span class="user-name clickable"
-      [routerLink]="['/paciente']" queryParamsHandling="preserve">{{user.nombre}}</span>
-    <button mat-icon-button class="btn-logout" (click)="logout()"><i class="material-icons">power_settings_new</i></button>
-  </div>
+  <span class="user-name" >{{user?.nombre}}</span>
+  <button mat-icon-button class="btn-logout" (click)="logout()"><i class="material-icons">power_settings_new</i></button>
 </mat-toolbar>

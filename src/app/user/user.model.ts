@@ -1,6 +1,6 @@
-import {Cita} from '../cita/cita.model';
+import {Cita} from '../api/cita.model';
 
-export interface User{
+export interface User {
   id?: string | number;
   clinica_id?: number;
   nombre: string;
@@ -15,17 +15,18 @@ export interface User{
   si_paciente?: boolean;
   si_terapeuta?: boolean;
   rol?: string;
+  key?: string;
   password?: string;
 
   citas?: Cita[];
 }
 
-export const fromFirebase= (user)=>({
+export const fromFirebase = (user) => ({
   nombre: user.displayName,
   email: user.email,
   rol: 'paciente',
-  apellidos:'',
+  apellidos: '',
   direccion: '',
-  clinica_id: 1, //TODO
+  clinica_id: 1,
   tfno: ''
 });

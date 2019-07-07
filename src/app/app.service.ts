@@ -1,115 +1,142 @@
 
-import {of as observableOf,  Observable } from 'rxjs';
+import {Observable, of, Subscription} from 'rxjs';
 
-import {map} from 'rxjs/operators';
+import {catchError, tap} from 'rxjs/operators';
 import { Injectable } from '@angular/core';
-import { Http, Response, Headers, RequestOptions } from '@angular/http';
 import { Router, ActivatedRoute } from '@angular/router';
 
 
-import { MatSnackBar, MatSnackBarRef } from '@angular/material';
+import { MatSnackBar } from '@angular/material';
 
 import { environment } from '../environments/environment';
 
-import { ApiResponse } from './api/apiresponse.model';
-import { NgRedux } from '@angular-redux/store';
-import { AppState } from './app.store';
+import {apiErrorResponse, ApiResponse, noConnectionResponse} from './api/apiresponse.model';
+import { AppState } from './app.state';
+import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
 
+const httpOptions = {
+    headers: new HttpHeaders({
+        'Content-Type':  'application/json',
+        Accept: 'application/json'
+    })
+};
 
 @Injectable()
 export class AppService {
 
-  public clinicaId: string = '1';
+  public clinicaId = '1';
   salaId: string;
   productoId: string;
   terapeutaId: number;
   current_id: string;
   key: string;
 
-  ERROR_NO_KEY: number= 1;
-  ERROR_NO_CLINICA: number= 2;
+  ERROR_NO_KEY = 1;
+  ERROR_NO_CLINICA = 2;
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private http: Http,
-    private ngRedux: NgRedux<AppState>,
+    private appState: AppState,
+    private http: HttpClient,
     private snackBar: MatSnackBar
   ) {}
 
-  setCurrentId(id){
-    this.current_id=id;
+  setCurrentId(id) {
+    this.current_id = id;
   }
-  readQuery(params){
+  readQuery(params) {
 
-      if(params.clinica_id || params.clinica ){
-        this.clinicaId= params.clinica_id || params.clinica;
-      }else
-        this.clinicaId= '1';
+      if (params.clinica_id || params.clinica ) {
+        this.clinicaId = params.clinica_id || params.clinica;
+      } else {
+        this.clinicaId = '1';
+      }
 
-      if(params.sala_id || params.sala )
-        this.salaId= params.sala_id || params.sala;
+      if (params.sala_id || params.sala ) {
+        this.salaId = params.sala_id || params.sala;
+      }
 
-      if(params.producto_id || params.producto )
-        this.productoId= params.producto_id || params.producto ;
+      if (params.producto_id || params.producto ) {
+        this.productoId = params.producto_id || params.producto ;
+      }
 
-      if(params.terapeuta_id || params.terapeuta )
-        this.terapeutaId= +params.terapeuta_id || +params.terapeuta ;
+      if (params.terapeuta_id || params.terapeuta ) {
+        this.terapeutaId = +params.terapeuta_id || +params.terapeuta ;
+      }
 
-      if(params.key){
-        this.key= params.key;
+      if (params.key) {
+        this.key = params.key;
       }
   }
-  apiGet(url:string): Observable<ApiResponse>{
+    getApiUrl( url: string) {
+        url = environment.API_URL + url;
+        if (!!this.appState.authToken) {
+            url += ( url.indexOf('?') >= 0 ? '&' : '?' ) + 'authToken=' +
+                this.appState.authToken + `&key=${this.appState.key}`;
+        }
+        return url;
+    }
+  apiGet(url: string): Observable<ApiResponse> {
 
-    if(url.indexOf('?')<0) url+='?';
-    url= environment.API_URL + url + '&clinica_id=' + this.clinicaId + '&key=' + this.key;
-    if(this.salaId)
-      url += '&sala_id='+this.salaId;
-    if(this.productoId)
-      url += '&producto_id='+this.productoId;
+    url = this.getApiUrl(url);
+    if (this.salaId) {
+      url += '&sala_id=' + this.salaId;
+    }
+    if (this.productoId) {
+      url += '&producto_id=' + this.productoId;
+    }
 
-    return this.http.get( url ).pipe(map(res=>res.json()));
+    return this.http.get<ApiResponse>( this.getApiUrl(url) , httpOptions)
+        .pipe(
+            tap(resp => {
+                if (!resp.success) {
+                    this.snack( resp.message );
+                }
+            }),
+            catchError( (error: HttpErrorResponse) => {
+                this.snack(error.message);
+                return of(apiErrorResponse(error.message));
+            }));
 
   }
 
-  apiPost(url:string, body: any): Observable<ApiResponse>{
-
-    var headers = new Headers();
-    headers.append("Accept", 'application/json');
-    headers.append('Content-Type', 'application/json' );
-    let options = new RequestOptions({ headers: headers });
-
-    body.clinica_id= this.clinicaId;
-    if(this.salaId)
-      body.sala_id= this.salaId;
-    if(this.productoId)
-      body.producto_id= this.productoId;
-    if(this.terapeutaId)
-      body.terapeuta_id= this.terapeutaId;
-
-    if(url.indexOf('?')<0) url+='?';
-    return this.http.post( environment.API_URL + url + '&key=' + this.key, body , options).pipe(
-                  map(res=>res.json()));
+  apiPost(url: string, body: any): Observable<ApiResponse> {
+      return this.http.post<ApiResponse>( this.getApiUrl(url) , body , httpOptions)
+          .pipe(
+              tap(resp => {
+                  if (!resp.success) {
+                      this.snack( resp.message );
+                  }
+              }),
+              catchError( (error: HttpErrorResponse) => {
+                  this.snack(error.message);
+                  return of(noConnectionResponse);
+              }));
   }
 
-  apiDelete(url:string): Observable<ApiResponse>{
-    var headers = new Headers();
-    headers.append("Accept", 'application/json');
-    headers.append('Content-Type', 'application/json' );
-    let options = new RequestOptions({ 'headers': headers });
-    return this
-            .http
-            .delete( environment.API_URL +url+ '&clinica_id=' + this.clinicaId + '&key=' + this.key, options).pipe(
-            map(res=>res.json()));
+  apiDelete(url: string): Observable<ApiResponse> {
+      return this.http.delete<ApiResponse>( this.getApiUrl(url)  , httpOptions)
+          .pipe(
+              tap(resp => {
+                  if (!resp.success) {
+                      this.snack( resp.message );
+                  }
+              }),
+              catchError( (error: HttpErrorResponse) => {
+                  this.snack(error.message);
+                  return of(noConnectionResponse);
+              }));
   }
 
-  public snack( message: string, action: string='Ok', duration: number= 3000): Observable<void>{
-    const snackBarRef= this.snackBar.open( message, action, {duration:duration});
+  public snack( message: string, action: string= 'Ok', duration: number= 3000): Observable<void> {
+    const snackBarRef = this.snackBar.open( message, action, {duration: duration});
     return snackBarRef.onAction();
   }
 
-  private mockSuccessResponse(): Observable<ApiResponse>{
-    return observableOf({success: true});
+  public unsubscribeAll( subscriptions: Subscription[] ) {
+    if (!!subscriptions) {
+      subscriptions.forEach( subs => subs.unsubscribe() );
+    }
   }
 }

@@ -1,4 +1,4 @@
-import {Cita} from '../cita/cita.model';
+import {Cita} from './cita.model';
 export interface Producto{
   id: number;
   nombre: string;

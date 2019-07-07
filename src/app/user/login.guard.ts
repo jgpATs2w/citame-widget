@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
 import { AppService } from '../app.service';
 
@@ -12,9 +12,9 @@ export class LoginGuard implements CanActivate {
   canActivate(
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): boolean {
-      const queryParams= state.root.queryParams;
-      if(!queryParams.key){
-        this.router.navigate(['/error'], {queryParams: {error:this.appService.ERROR_NO_KEY}, queryParamsHandling: 'merge'});
+      const queryParams = state.root.queryParams;
+      if (!queryParams.key) {
+        this.router.navigate(['/error'], {queryParams: {error: this.appService.ERROR_NO_KEY}, queryParamsHandling: 'merge'});
         return false;
       }
 

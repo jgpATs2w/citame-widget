@@ -1,12 +1,8 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule, LOCALE_ID } from '@angular/core';
-import { NgReduxModule, NgRedux, DevToolsExtension }  from '@angular-redux/store';
-import { applyMiddleware } from 'redux'
-import * as persistState from 'redux-localstorage';
-import { createLogger } from 'redux-logger';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 
-import { HttpModule } from '@angular/http';
 import { registerLocaleData } from '@angular/common';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { AppMaterialModule } from './app.material.module';
@@ -18,8 +14,6 @@ import { AngularFireModule } from 'angularfire2';
 import { AngularFireAuthModule } from 'angularfire2/auth';
 
 import { environment } from '../environments/environment';
-import { AppState, INITIAL_STATE, rootReducer } from './app.store';
-import { UserActions, CalendarioActions } from './app.actions';
 
 import { AuthGuard } from './user/auth.guard';
 import { LoginGuard } from './user/login.guard';
@@ -34,8 +28,10 @@ import { LoginComponent } from './views/login/login.component';
 import { CalendarioComponent } from './views/calendario/calendario.component';
 import { PacienteComponent } from './views/paciente/paciente.component';
 import { CitaComponent } from './views/cita/cita.component';
-import { ErrorComponent } from './views/error/error.component';
 import { EscapeHtmlPipe, EscapeUrlPipe } from './app.pipes';
+import {AppRouter} from './app.router';
+import {AppState} from './app.state';
+import {ApiService} from './api/api.service';
 
 registerLocaleData(localeEs);
 @NgModule({
@@ -46,52 +42,36 @@ registerLocaleData(localeEs);
     CalendarioComponent,
     PacienteComponent,
     CitaComponent,
-    ErrorComponent,
     EscapeHtmlPipe, EscapeUrlPipe
   ],
   imports: [
     BrowserModule,
-    HttpModule,
+    HttpClientModule,
     AppMaterialModule,
     routes,
     FlexLayoutModule,
     ReactiveFormsModule, FormsModule,
     CalendarModule.forRoot(),
     AngularFireModule.initializeApp(environment.firebase, 'citame'),
-    AngularFireAuthModule,
-    NgReduxModule
+    AngularFireAuthModule
   ],
   providers: [
     AppService,
+    ApiService,
+    AppState,
+    AppRouter,
     {provide: LOCALE_ID, useValue: 'es-ES' },
     UserService,
     AuthGuard, CalendarioGuard, LoginGuard,
     CalendarioService,
-    UserActions, CalendarioActions,
     EscapeHtmlPipe, EscapeUrlPipe
   ],
   bootstrap: [AppComponent]
 })
 export class AppModule {
   constructor(
-      ngRedux: NgRedux<AppState>,
-      devTools: DevToolsExtension,
       dateAdapter: DateAdapter<Date>
     ){
-      const enhancers = [persistState('',{key:'redux-citame-widget'})]
-      if(devTools.isEnabled && !environment.production)
-        enhancers.push(devTools.enhancer());
-      const middleware= [
-        //createLogger(),
-      ];
-
-      ngRedux.configureStore(
-        rootReducer,
-        INITIAL_STATE,
-        middleware,
-        enhancers
-      );
-
       dateAdapter.setLocale('es');
     }
 

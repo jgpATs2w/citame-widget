@@ -14,9 +14,6 @@
   <mat-list-item *ngIf="cita && deleted">
     La cita se ha eliminado.
   </mat-list-item>
-  <mat-list-item *ngIf="cita && deleted">
-    <button mat-raised-button *ngIf="cita" (click)="undo()" ><i class="material-icons">undo</i> DESHACER</button>
-  </mat-list-item>
   <mat-list-item>
     <a href="javascript:void()" [routerLink]="['/calendario']" queryParamsHandling="preserve">Reservar otra cita</a>
   </mat-list-item>

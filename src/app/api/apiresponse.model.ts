@@ -3,6 +3,7 @@ export interface ApiResponse{
   data?: any;
   message?: string;
   status?: number;
+  authToken?: string;
 }
 
 export const mapResponse= (response) : ApiResponse =>{
@@ -18,3 +19,4 @@ export const mapResponse= (response) : ApiResponse =>{
 
 
 export const noConnectionResponse: ApiResponse= {success: false, message: 'no connection', data: null};
+export const apiErrorResponse = ( message ): ApiResponse => ({success: false, message, data: null});
