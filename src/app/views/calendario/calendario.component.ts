@@ -47,6 +47,7 @@ export class CalendarioComponent implements OnInit, OnDestroy {
     viewDate: Date = new Date();
     locale = 'es';
     weekStartsOn = 1;
+    key: string;
 
     refresh: Subject<any> = new Subject();
     events: CalendarEvent[] = [];
@@ -82,9 +83,15 @@ export class CalendarioComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
       window.scrollTo(0, 0);
-      this.loadState();
-      this.loadQueryParams();
-      this.loadEvents();
+      if (!this.key) {
+          this.appService.readQuery(this.appRouter.getQueryParams());
+          this.key = this.appState.key;
+      }
+      if (this.key) {
+          this.loadState();
+          this.loadQueryParams();
+          this.loadEvents();
+      }
     }
     ngOnDestroy() {
       if (this.routeParamsSubscription) {

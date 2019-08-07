@@ -2,12 +2,12 @@
 
 <mat-sidenav-container>
   <mat-sidenav-content>
-    <div class="app-syncing" *ngIf="!events" fxFlexFill fxLayoutAlign="center center">
+      <div class="error-message mat-error" *ngIf="!key">Falta key en la url, por favor utilice una url válida.</div>
+    <div class="app-syncing" *ngIf="!!key && !events" fxFlexFill fxLayoutAlign="center center">
       <mat-spinner></mat-spinner>
     </div>
-    <div class="calendar-container" *ngIf="!!events">
+    <div class="calendar-container" *ngIf="!!key && !!events">
       <mat-toolbar color="none">
-
         <mat-toolbar-row
          [ngStyle.lt-sm]="{'font-size.em': 0.8}">
           <span class="toolbar-date-title">{{ viewDate | date:'MMMM y' }}</span>

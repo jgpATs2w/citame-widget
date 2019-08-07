@@ -15,11 +15,9 @@ import { AngularFireAuthModule } from 'angularfire2/auth';
 
 import { environment } from '../environments/environment';
 
-import { AuthGuard } from './user/auth.guard';
 import { AppService } from './app.service';
 import { UserService } from './user/user.service';
 import { CalendarioService } from './calendario/calendario.service';
-import { CalendarioGuard } from './calendario/calendario.guard';
 import { routes } from './app.routes';
 import { AppComponent } from './app.component';
 import { TopbarComponent } from './views/topbar/topbar.component';
@@ -61,7 +59,6 @@ registerLocaleData(localeEs);
     AppRouter,
     {provide: LOCALE_ID, useValue: 'es-ES' },
     UserService,
-    AuthGuard, CalendarioGuard,
     CalendarioService,
     EscapeHtmlPipe, EscapeUrlPipe
   ],
@@ -70,7 +67,7 @@ registerLocaleData(localeEs);
 export class AppModule {
   constructor(
       dateAdapter: DateAdapter<Date>
-    ){
+    ) {
       dateAdapter.setLocale('es');
     }
 

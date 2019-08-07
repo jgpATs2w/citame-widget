@@ -6,18 +6,15 @@ import { CalendarioComponent } from './views/calendario/calendario.component';
 import { PacienteComponent } from './views/paciente/paciente.component';
 import { CitaComponent } from './views/cita/cita.component';
 
-import { AuthGuard } from './user/auth.guard';
-import { CalendarioGuard } from './calendario/calendario.guard';
-
 export const routerConfig: Routes = [
     { path: '', redirectTo: 'calendario', pathMatch: 'full' },
     { path: 'login', component: LoginComponent },
-    { path: 'calendario', component: CalendarioComponent, canActivate: [CalendarioGuard] },
-    { path: 'calendario/:view', component: CalendarioComponent, canActivate: [CalendarioGuard] },
-    { path: 'calendario/:view/:date', component: CalendarioComponent, canActivate: [CalendarioGuard] },
-    { path: 'paciente', component: PacienteComponent, canActivate: [AuthGuard] },
-    { path: 'paciente/:id', component: PacienteComponent, canActivate: [AuthGuard] },
-    { path: 'cita/:id', component: CitaComponent, canActivate: [AuthGuard] }
+    { path: 'calendario', component: CalendarioComponent },
+    { path: 'calendario/:view', component: CalendarioComponent },
+    { path: 'calendario/:view/:date', component: CalendarioComponent },
+    { path: 'paciente', component: PacienteComponent },
+    { path: 'paciente/:id', component: PacienteComponent },
+    { path: 'cita/:id', component: CitaComponent }
 
 ]
 
