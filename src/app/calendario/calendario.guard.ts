@@ -17,17 +17,15 @@ export class CalendarioGuard implements CanActivate {
 
   canActivate(
     next: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot): Observable<boolean> {
+    state: RouterStateSnapshot): boolean {
       const queryParams = state.root.queryParams;
       if (!queryParams.key) {
-        this.router.navigate(['/error'], {queryParams: {error: this.appService.ERROR_NO_KEY}, queryParamsHandling: 'merge'});
-        return observableOf(false);
+          this.appService.snack('falta key en la url, contacte con el servicio de citame.click');
+        return false;
       }
 
       this.appService.readQuery(queryParams);
 
-      return this.userService.currentUser$.pipe(
-              tap(u => {if (u) { this.appService.setCurrentId(u.id); }}),
-              map(_ => true), );
+      return true;
   }
 }

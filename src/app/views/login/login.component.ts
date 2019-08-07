@@ -144,24 +144,7 @@ export class LoginComponent implements OnInit {
         }
       }, error => this.displayError(error, true));
   }
-/*
-  private saveUserAndGo(user: User) {
-    if (user) {
-      this.userService.actions.setCurrentUser(user);
-      if (this.route.snapshot.queryParams.from) {
-        const from = this.route.snapshot.queryParams.from;
-        const queryParams = this.route.snapshot.queryParams;
 
-        this.router.navigate([from], {queryParams: {...queryParams, from: undefined}});
-      } else {
-        this.router.navigate(['calendario'], {queryParamsHandling: 'preserve', preserveFragment: true});
-      }
-    } else {
-      this.setupRegisterForm(this.userService.userFromFirebase);
-      this.sending = false;
-      this.state = 2;
-    }
-  }*/
     private parseApiResponse(response: ApiResponse) {
         const user = response.data;
         this.appState.authToken = response.authToken;

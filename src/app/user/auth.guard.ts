@@ -19,7 +19,7 @@ export class AuthGuard implements CanActivate {
     state: RouterStateSnapshot): Observable<boolean> | boolean {
       const queryParams = state.root.queryParams;
       if (!queryParams.key) {
-        this.router.navigate(['/error'], {queryParams: {error: this.appService.ERROR_NO_KEY}, queryParamsHandling: 'merge'});
+        this.appService.snack('falta key en la url, contacte con el servicio de citame.click');
         return false;
       }
 

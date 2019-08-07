@@ -23,8 +23,12 @@ export class TopbarComponent implements OnInit {
     this.user = this.appState.user;
   }
 
-  logout(){
+  logout() {
+    this.user = null;
     this.appState.reset();
     this.appRouter.navigateCalendario();
   }
+    login() {
+        this.appRouter.navigateLogin();
+    }
 }

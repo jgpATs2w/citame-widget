@@ -149,10 +149,10 @@ export class CalendarioComponent implements OnInit, OnDestroy {
       if (this.syncing) { return; }
 
       if (this.isValidDate(date)) {
-        this.userService.currentUser$.pipe(first()).subscribe(user => {
-          if (user) {
+
+          if (this.appState.user) {
             const cita = Object.assign({}, CITA_NEW);
-            cita.paciente_id = +user.id;
+            cita.paciente_id = +this.appState.user.id;
             cita.producto_id = +this.productoId;
             cita.terapeuta_id = +this.terapeutaId;
 
@@ -169,7 +169,6 @@ export class CalendarioComponent implements OnInit, OnDestroy {
           } else {
             this.authenticate();
           }
-        });
       }
 
     }
@@ -190,7 +189,7 @@ export class CalendarioComponent implements OnInit, OnDestroy {
       return true;
     }
     ///
-    loadQueryParams(){
+    loadQueryParams() {
       const params = this.appRouter.getQueryParams();
       if (params['sala']) {
         this.salaId = params['sala'];
@@ -221,13 +220,15 @@ export class CalendarioComponent implements OnInit, OnDestroy {
       events$.pipe(
         first() ).subscribe( events => {
         this.events = events;
+        this.refresh.next();
       } );
     }
-    authenticate(){
+    authenticate() {
       this.appState.viewDate = this.viewDate;
       this.appState.view = this.view;
       this.appRouter.navigateLogin();
     }
+
     hourClicked(date: Date): void {
       this.addEvent(date);
     }

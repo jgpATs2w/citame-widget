@@ -16,7 +16,6 @@ import { AngularFireAuthModule } from 'angularfire2/auth';
 import { environment } from '../environments/environment';
 
 import { AuthGuard } from './user/auth.guard';
-import { LoginGuard } from './user/login.guard';
 import { AppService } from './app.service';
 import { UserService } from './user/user.service';
 import { CalendarioService } from './calendario/calendario.service';
@@ -62,7 +61,7 @@ registerLocaleData(localeEs);
     AppRouter,
     {provide: LOCALE_ID, useValue: 'es-ES' },
     UserService,
-    AuthGuard, CalendarioGuard, LoginGuard,
+    AuthGuard, CalendarioGuard,
     CalendarioService,
     EscapeHtmlPipe, EscapeUrlPipe
   ],

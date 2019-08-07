@@ -2,10 +2,10 @@
 
 <mat-sidenav-container>
   <mat-sidenav-content>
-    <div class="app-syncing" *ngIf="syncing" fxFlexFill fxLayoutAlign="center center">
+    <div class="app-syncing" *ngIf="!events" fxFlexFill fxLayoutAlign="center center">
       <mat-spinner></mat-spinner>
     </div>
-    <div class="calendar-container" *ngIf="events$ | async; else loading; let events">
+    <div class="calendar-container" *ngIf="!!events">
       <mat-toolbar color="none">
 
         <mat-toolbar-row

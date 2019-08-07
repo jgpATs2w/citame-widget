@@ -67,19 +67,20 @@ export class AppService {
 
       if (params.key) {
         this.key = params.key;
+        this.appState.key = params.key;
       }
   }
     getApiUrl( url: string) {
         url = environment.API_URL + url;
+        url += ( url.indexOf('?') >= 0 ? '&' : '?' );
         if (!!this.appState.authToken) {
-            url += ( url.indexOf('?') >= 0 ? '&' : '?' ) + 'authToken=' +
-                this.appState.authToken + `&key=${this.appState.key}`;
+            url += 'authToken=' + this.appState.authToken;
         }
+        url += `&key=${this.appState.key}`;
         return url;
     }
   apiGet(url: string): Observable<ApiResponse> {
 
-    url = this.getApiUrl(url);
     if (this.salaId) {
       url += '&sala_id=' + this.salaId;
     }

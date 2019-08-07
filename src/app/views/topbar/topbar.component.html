@@ -5,5 +5,6 @@
 
   <span class="spacer"></span>
   <span class="user-name" >{{user?.nombre}}</span>
-  <button mat-icon-button class="btn-logout" (click)="logout()"><i class="material-icons">power_settings_new</i></button>
+  <button mat-icon-button class="btn-logout" *ngIf="!!user" (click)="logout()"><i class="material-icons">power_settings_new</i></button>
+  <button mat-icon-button class="btn-logout" *ngIf="!user" (click)="login()"><i class="material-icons">person</i></button>
 </mat-toolbar>
